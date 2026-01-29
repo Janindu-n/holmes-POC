@@ -24,6 +24,10 @@ function RegisterForm() {
     setError('');
 
     try {
+      if (!auth || !db) {
+        throw new Error('Firebase is not properly configured. Please check your environment variables.');
+      }
+
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       await updateProfile(userCredential.user, { displayName: name });
 

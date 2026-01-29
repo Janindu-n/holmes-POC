@@ -17,13 +17,22 @@ const firebaseConfig = {
 const isConfigValid = !!firebaseConfig.apiKey;
 
 // Initialize Firebase
-// If we're during build time and keys are missing, we don't initialize to avoid prerendering errors
-const app: FirebaseApp | null = isConfigValid
-  ? (getApps().length > 0 ? getApp() : initializeApp(firebaseConfig))
-  : null;
+// During build time (SSR), we avoid initializing if keys are missing to prevent prerendering errors.
+// In the browser, we try to initialize but catch any errors to avoid crashing the whole app.
+const app: FirebaseApp | null = (() => {
+  if (typeof window === "undefined" && !isConfigValid) {
+    return null;
+  }
+  try {
+    return getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
+  } catch (error) {
+    console.error("Firebase initialization error:", error);
+    return null;
+  }
+})();
 
-// Cast to correct types to satisfy TS, but these will be null if config is missing.
-// This is acceptable during build time as long as these are not called during SSR.
+// Export services as null if app initialization failed.
+// Components should check for these before use.
 const auth = (app ? getAuth(app) : null) as unknown as Auth;
 const db = (app ? getFirestore(app) : null) as unknown as Firestore;
 
@@ -34,6 +43,8 @@ if (typeof window !== "undefined" && app) {
     if (supported) {
       analytics = getAnalytics(app);
     }
+  }).catch(err => {
+    console.error("Analytics support check failed:", err);
   });
 }
 
