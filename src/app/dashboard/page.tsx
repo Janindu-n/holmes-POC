@@ -1,13 +1,30 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { auth } from '@/lib/firebase';
-import { signOut } from 'firebase/auth';
+import { signOut, onAuthStateChanged } from 'firebase/auth';
+import Loading from '@/app/loading';
 
 export default function Dashboard() {
   const router = useRouter();
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Security: Authentication guard to protect the dashboard
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        // Redirect to login if user is not authenticated
+        router.push('/auth/login');
+      } else {
+        // User is authenticated, allow viewing the dashboard
+        setLoading(false);
+      }
+    });
+
+    return () => unsubscribe();
+  }, [router]);
 
   const handleLogout = async () => {
     try {
@@ -17,6 +34,10 @@ export default function Dashboard() {
       console.error('Error signing out:', error);
     }
   };
+
+  if (loading) {
+    return <Loading />;
+  }
 
   return (
     <div className="bg-dashboard-bg dark:bg-background-dark font-display text-stone-600 dark:text-stone-300 min-h-screen flex flex-col overflow-x-hidden transition-colors duration-200">
