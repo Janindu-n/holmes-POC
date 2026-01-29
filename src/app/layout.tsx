@@ -18,8 +18,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "HomeCare - Premium Maintenance & Security",
-  description: "Advanced engineering solutions and home care by Holmes Engineering.",
+  title: "Holmes Homes - Premium Maintenance & Security",
+  description: "Advanced engineering solutions and home care by Holmes Homes.",
 };
 
 export default function RootLayout({
@@ -33,7 +33,7 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
       </head>
       <body
-        className={`${GeistSans.className} ${GeistMono.variable} ${publicSans.variable} ${inter.variable} antialiased`}
+        className={`${GeistSans.className} ${GeistSans.variable} ${GeistMono.variable} ${publicSans.variable} ${inter.variable} antialiased`}
       >
         <AntdRegistry>{children}</AntdRegistry>
       </body>

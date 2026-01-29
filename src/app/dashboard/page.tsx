@@ -1,13 +1,40 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { auth } from '@/lib/firebase';
 import { signOut } from 'firebase/auth';
+import MuxPlayer from '@mux/mux-player-react';
+import { Job, JobStatus, JOB_STATUS_LABELS, JOB_STATUS_ORDER } from '@/types/job';
+
+const MOCK_JOB: Job = {
+  id: 'job-123',
+  title: 'Water System Repair',
+  status: 'started', // Current state for demo
+  location: '123 Coconut Grove, Miami, FL',
+  clientName: 'Aruni P.',
+  specialistName: 'Kamal Perera',
+  createdAt: '2023-10-01T10:00:00Z',
+  updatedAt: '2023-10-12T10:42:00Z',
+  muxPlaybackId: 'v69R6u02ID9LOnZ7SDE00Uq9700YpLqXp6f', // Demo playback ID
+  isStreaming: true,
+};
+
+const STATUS_ICONS: Record<JobStatus, string> = {
+  posted: 'post_add',
+  picked_up: 'handshake',
+  analysis: 'analytics',
+  quotation: 'request_quote',
+  materials: 'shopping_cart',
+  started: 'engineering',
+  qa: 'verified',
+  complete: 'task_alt',
+};
 
 export default function Dashboard() {
   const router = useRouter();
+  const [job] = useState<Job>(MOCK_JOB);
 
   const handleLogout = async () => {
     try {
@@ -17,6 +44,10 @@ export default function Dashboard() {
       console.error('Error signing out:', error);
     }
   };
+
+  const currentStatusIndex = JOB_STATUS_ORDER.indexOf(job.status);
+
+  const canShowStream = currentStatusIndex >= JOB_STATUS_ORDER.indexOf('started');
 
   return (
     <div className="bg-dashboard-bg dark:bg-background-dark font-display text-stone-600 dark:text-stone-300 min-h-screen flex flex-col overflow-x-hidden transition-colors duration-200">
@@ -29,7 +60,7 @@ export default function Dashboard() {
                 <div className="flex items-center justify-center size-8 bg-primary rounded-lg text-white shadow-sm">
                   <span className="material-symbols-outlined text-xl">shield_person</span>
                 </div>
-                <span className="text-lg font-bold tracking-tight text-stone-800 dark:text-white">Holmes<span className="text-primary">Home</span></span>
+                <span className="text-lg font-bold tracking-tight text-stone-800 dark:text-white">Holmes<span className="text-primary"> Homes</span></span>
               </Link>
             </div>
             <div className="hidden md:flex items-center gap-8">
@@ -39,11 +70,17 @@ export default function Dashboard() {
               <a className="text-sm font-medium text-stone-600 dark:text-stone-300 hover:text-primary transition-colors" href="#">Settings</a>
             </div>
             <div className="flex items-center gap-4">
-              <button className="hidden sm:flex items-center justify-center bg-primary hover:bg-primary-hover text-white px-4 py-2 rounded-lg text-sm font-semibold shadow-sm transition-all hover:shadow-md">
+              <button
+                className="hidden sm:flex items-center justify-center bg-primary hover:bg-primary-hover text-white px-4 py-2 rounded-lg text-sm font-semibold shadow-sm transition-all hover:shadow-md"
+                aria-label="Request Service"
+              >
                 <span className="material-symbols-outlined text-[20px] mr-2">add_circle</span>
                 Request Service
               </button>
-              <button className="relative p-2 text-stone-500 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-700 rounded-lg transition-colors">
+              <button
+                className="relative p-2 text-stone-500 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-700 rounded-lg transition-colors"
+                aria-label="Notifications"
+              >
                 <span className="material-symbols-outlined">notifications</span>
                 <span className="absolute top-2 right-2 size-2 bg-secondary rounded-full border border-card-light dark:border-surface-dark"></span>
               </button>
@@ -67,10 +104,10 @@ export default function Dashboard() {
         <header className="mb-8">
           <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-black tracking-tight text-stone-800 dark:text-white mb-2">Villa 42, Palm Heights</h1>
+              <h1 className="text-3xl font-black tracking-tight text-stone-800 dark:text-white mb-2">{job.title}</h1>
               <div className="flex items-center text-stone-500 dark:text-stone-400 text-sm font-medium">
                 <span className="material-symbols-outlined text-lg mr-1 text-primary">location_on</span>
-                123 Coconut Grove, Miami, FL
+                {job.location}
               </div>
             </div>
             <div className="flex items-center gap-4 bg-card-light dark:bg-surface-dark px-4 py-3 rounded-lg shadow-sm border border-stone-200 dark:border-stone-700">
@@ -90,9 +127,80 @@ export default function Dashboard() {
           </div>
         </header>
 
+        {/* Job Progress Timeline */}
+        <section className="mb-10 bg-card-light dark:bg-surface-dark rounded-xl p-6 shadow-sm border border-stone-200 dark:border-stone-700 overflow-x-auto">
+          <h2 className="text-lg font-bold text-stone-800 dark:text-white mb-6">Job Progress</h2>
+          <div className="min-w-[800px] relative">
+            <div className="absolute top-5 left-0 w-full h-1 bg-stone-200 dark:bg-stone-700 z-0"></div>
+            <div
+              className="absolute top-5 left-0 h-1 bg-primary z-0 transition-all duration-500"
+              style={{ width: `${(currentStatusIndex / (JOB_STATUS_ORDER.length - 1)) * 100}%` }}
+            ></div>
+            <div className="flex justify-between relative z-10">
+              {JOB_STATUS_ORDER.map((status, index) => {
+                const isActive = index <= currentStatusIndex;
+                const isCurrent = index === currentStatusIndex;
+                return (
+                  <div key={status} className="flex flex-col items-center gap-3 flex-1">
+                    <div className={`size-10 rounded-full flex items-center justify-center border-2 transition-all duration-300 ${
+                      isActive
+                        ? 'bg-primary border-primary text-white shadow-md shadow-orange-500/20'
+                        : 'bg-white dark:bg-stone-800 border-stone-200 dark:border-stone-700 text-stone-400'
+                    } ${isCurrent ? 'ring-4 ring-orange-500/20 scale-110' : ''}`}>
+                      <span className="material-symbols-outlined text-xl">
+                        {STATUS_ICONS[status]}
+                      </span>
+                    </div>
+                    <span className={`text-[10px] font-bold uppercase text-center tracking-tight px-1 ${
+                      isActive ? 'text-primary' : 'text-stone-400'
+                    }`}>
+                      {JOB_STATUS_LABELS[status]}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left Column */}
           <div className="lg:col-span-2 flex flex-col gap-6">
+            {/* Live Stream Section */}
+            {canShowStream && (
+              <section className="bg-card-light dark:bg-surface-dark rounded-xl shadow-sm border border-stone-200 dark:border-stone-700 overflow-hidden">
+                <div className="px-6 py-5 border-b border-stone-100 dark:border-stone-700 flex justify-between items-center bg-white/50 dark:bg-stone-800/50">
+                  <div className="flex items-center gap-3">
+                    <h3 className="text-lg font-bold text-stone-800 dark:text-white">Live Job Stream</h3>
+                    {job.isStreaming && (
+                      <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-red-50 text-red-600 border border-red-100 animate-pulse">
+                        <span className="size-2 rounded-full bg-red-600"></span>
+                        <span className="text-[10px] font-black uppercase tracking-wider">Live</span>
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-medium text-stone-500">Specialist: {job.specialistName}</span>
+                  </div>
+                </div>
+                <div className="aspect-video bg-black relative group">
+                  {job.muxPlaybackId ? (
+                    <MuxPlayer
+                      streamType="live"
+                      playbackId={job.muxPlaybackId}
+                      metadataVideoTitle={`${job.title} Live Stream`}
+                      className="w-full h-full object-contain"
+                    />
+                  ) : (
+                    <div className="flex flex-col items-center justify-center h-full text-stone-500">
+                      <span className="material-symbols-outlined text-5xl mb-2">videocam_off</span>
+                      <p>Stream not available</p>
+                    </div>
+                  )}
+                </div>
+              </section>
+            )}
+
             <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="bg-card-light dark:bg-surface-dark rounded-xl p-6 shadow-sm border border-stone-200 dark:border-stone-700 md:col-span-2 flex items-center justify-between relative overflow-hidden group">
                 <div className="absolute right-0 top-0 h-full w-1/2 bg-gradient-to-l from-amber-100/60 to-transparent dark:from-amber-900/20 dark:to-transparent pointer-events-none"></div>
@@ -216,8 +324,18 @@ export default function Dashboard() {
                 <div className="flex items-center justify-between mb-4 px-2">
                   <span className="text-sm font-semibold text-stone-800 dark:text-white">October 2023</span>
                   <div className="flex gap-1">
-                    <button className="p-1 hover:bg-stone-100 dark:hover:bg-stone-700 rounded text-stone-500"><span className="material-symbols-outlined text-sm">chevron_left</span></button>
-                    <button className="p-1 hover:bg-stone-100 dark:hover:bg-stone-700 rounded text-stone-500"><span className="material-symbols-outlined text-sm">chevron_right</span></button>
+                    <button
+                      className="p-1 hover:bg-stone-100 dark:hover:bg-stone-700 rounded text-stone-500"
+                      aria-label="Previous Month"
+                    >
+                      <span className="material-symbols-outlined text-sm">chevron_left</span>
+                    </button>
+                    <button
+                      className="p-1 hover:bg-stone-100 dark:hover:bg-stone-700 rounded text-stone-500"
+                      aria-label="Next Month"
+                    >
+                      <span className="material-symbols-outlined text-sm">chevron_right</span>
+                    </button>
                   </div>
                 </div>
                 <div className="space-y-3">
@@ -284,7 +402,10 @@ export default function Dashboard() {
         </div>
 
         {/* Floating Action Button */}
-        <button className="sm:hidden fixed bottom-6 right-6 size-14 bg-primary text-white rounded-full shadow-lg flex items-center justify-center z-50 hover:bg-primary-hover transition-transform hover:scale-105 active:scale-95">
+        <button
+          className="sm:hidden fixed bottom-6 right-6 size-14 bg-primary text-white rounded-full shadow-lg flex items-center justify-center z-50 hover:bg-primary-hover transition-transform hover:scale-105 active:scale-95"
+          aria-label="Add Job"
+        >
           <span className="material-symbols-outlined text-2xl">add</span>
         </button>
       </main>

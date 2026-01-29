@@ -16,7 +16,7 @@ export default function Onboarding() {
           How can we help today?
         </h1>
         <p className="text-lg text-stone-600 dark:text-stone-400">
-          Choose how you would like to use HolmesHome
+          Choose how you would like to use Holmes Homes
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-12">
