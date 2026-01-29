@@ -18,8 +18,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "HomeCare - Premium Maintenance & Security",
-  description: "Advanced engineering solutions and home care by Holmes Engineering.",
+  title: "Holmes Homes - Premium Maintenance & Security",
+  description: "Advanced engineering solutions and home care by Holmes Homes.",
 };
 
 export default function RootLayout({
