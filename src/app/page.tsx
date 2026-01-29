@@ -53,7 +53,10 @@ export default function Home() {
                 <Link href="/onboarding" className="inline-flex items-center justify-center rounded-lg bg-primary px-6 py-3.5 text-base font-bold text-white shadow-lg shadow-orange-500/20 hover:bg-orange-700 hover:shadow-orange-500/40 transition-all duration-200">
                   Get a Free Quote
                 </Link>
-                <button className="inline-flex items-center justify-center rounded-lg border border-stone-200 bg-white px-6 py-3.5 text-base font-bold text-stone-700 shadow-sm hover:bg-stone-50 hover:text-primary dark:border-stone-700 dark:bg-stone-800 dark:text-stone-300 dark:hover:bg-stone-700 transition-all duration-200">
+                <button
+                  className="inline-flex items-center justify-center rounded-lg border border-stone-200 bg-white px-6 py-3.5 text-base font-bold text-stone-700 shadow-sm hover:bg-stone-50 hover:text-primary dark:border-stone-700 dark:bg-stone-800 dark:text-stone-300 dark:hover:bg-stone-700 transition-all duration-200"
+                  aria-label="Watch Video"
+                >
                   <span className="material-symbols-outlined mr-2">play_circle</span> Watch Video
                 </button>
               </div>

@@ -33,7 +33,7 @@ export default function RootLayout({
         <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
       </head>
       <body
-        className={`${GeistSans.className} ${GeistMono.variable} ${publicSans.variable} ${inter.variable} antialiased`}
+        className={`${GeistSans.className} ${GeistSans.variable} ${GeistMono.variable} ${publicSans.variable} ${inter.variable} antialiased`}
       >
         <AntdRegistry>{children}</AntdRegistry>
       </body>

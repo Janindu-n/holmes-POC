@@ -70,11 +70,17 @@ export default function Dashboard() {
               <a className="text-sm font-medium text-stone-600 dark:text-stone-300 hover:text-primary transition-colors" href="#">Settings</a>
             </div>
             <div className="flex items-center gap-4">
-              <button className="hidden sm:flex items-center justify-center bg-primary hover:bg-primary-hover text-white px-4 py-2 rounded-lg text-sm font-semibold shadow-sm transition-all hover:shadow-md">
+              <button
+                className="hidden sm:flex items-center justify-center bg-primary hover:bg-primary-hover text-white px-4 py-2 rounded-lg text-sm font-semibold shadow-sm transition-all hover:shadow-md"
+                aria-label="Request Service"
+              >
                 <span className="material-symbols-outlined text-[20px] mr-2">add_circle</span>
                 Request Service
               </button>
-              <button className="relative p-2 text-stone-500 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-700 rounded-lg transition-colors">
+              <button
+                className="relative p-2 text-stone-500 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-700 rounded-lg transition-colors"
+                aria-label="Notifications"
+              >
                 <span className="material-symbols-outlined">notifications</span>
                 <span className="absolute top-2 right-2 size-2 bg-secondary rounded-full border border-card-light dark:border-surface-dark"></span>
               </button>
@@ -318,8 +324,18 @@ export default function Dashboard() {
                 <div className="flex items-center justify-between mb-4 px-2">
                   <span className="text-sm font-semibold text-stone-800 dark:text-white">October 2023</span>
                   <div className="flex gap-1">
-                    <button className="p-1 hover:bg-stone-100 dark:hover:bg-stone-700 rounded text-stone-500"><span className="material-symbols-outlined text-sm">chevron_left</span></button>
-                    <button className="p-1 hover:bg-stone-100 dark:hover:bg-stone-700 rounded text-stone-500"><span className="material-symbols-outlined text-sm">chevron_right</span></button>
+                    <button
+                      className="p-1 hover:bg-stone-100 dark:hover:bg-stone-700 rounded text-stone-500"
+                      aria-label="Previous Month"
+                    >
+                      <span className="material-symbols-outlined text-sm">chevron_left</span>
+                    </button>
+                    <button
+                      className="p-1 hover:bg-stone-100 dark:hover:bg-stone-700 rounded text-stone-500"
+                      aria-label="Next Month"
+                    >
+                      <span className="material-symbols-outlined text-sm">chevron_right</span>
+                    </button>
                   </div>
                 </div>
                 <div className="space-y-3">
@@ -386,7 +402,10 @@ export default function Dashboard() {
         </div>
 
         {/* Floating Action Button */}
-        <button className="sm:hidden fixed bottom-6 right-6 size-14 bg-primary text-white rounded-full shadow-lg flex items-center justify-center z-50 hover:bg-primary-hover transition-transform hover:scale-105 active:scale-95">
+        <button
+          className="sm:hidden fixed bottom-6 right-6 size-14 bg-primary text-white rounded-full shadow-lg flex items-center justify-center z-50 hover:bg-primary-hover transition-transform hover:scale-105 active:scale-95"
+          aria-label="Add Job"
+        >
           <span className="material-symbols-outlined text-2xl">add</span>
         </button>
       </main>
