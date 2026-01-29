@@ -2,8 +2,22 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { auth } from '@/lib/firebase';
+import { signOut } from 'firebase/auth';
 
 export default function Dashboard() {
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      router.push('/');
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+  };
+
   return (
     <div className="bg-dashboard-bg dark:bg-background-dark font-display text-stone-600 dark:text-stone-300 min-h-screen flex flex-col overflow-x-hidden transition-colors duration-200">
       {/* Navigation */}
@@ -32,6 +46,13 @@ export default function Dashboard() {
               <button className="relative p-2 text-stone-500 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-700 rounded-lg transition-colors">
                 <span className="material-symbols-outlined">notifications</span>
                 <span className="absolute top-2 right-2 size-2 bg-secondary rounded-full border border-card-light dark:border-surface-dark"></span>
+              </button>
+              <button
+                onClick={handleLogout}
+                className="flex items-center justify-center p-2 text-stone-500 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-700 rounded-lg transition-colors"
+                title="Sign Out"
+              >
+                <span className="material-symbols-outlined">logout</span>
               </button>
               <div className="size-9 rounded-full bg-stone-200 overflow-hidden border border-stone-200 dark:border-stone-600 cursor-pointer">
                 <img alt="User Profile" className="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCooRgWQXUK6jdIrdSYeqWjfVhT4B0FxuYni-tjM9KsX1cZKRV5fTBR9UrjqYKTqWnuvy1gxEU4T3T32MBXL4x7oP--xNRoGzlR_sdj6JplWyzuyVVtdPedCQ3k-TSA1LDYnssuJhZxtaKmPDNwzJe3yXkMbAyW0xEpTXlBfUkqYMB2RQ6O0EVdeanIJf1itIlcMo8zzIeL6xM7OMoE3KlTbLV2_2hGD4fVbVTrSZ3k0s3U9Cx0JyLyGiAWGTWqsY4fmqqn4RcdiKtb"/>
