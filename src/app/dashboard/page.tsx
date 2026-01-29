@@ -33,26 +33,30 @@ export default function Dashboard() {
               </Link>
             </div>
             <div className="hidden md:flex items-center gap-8">
-              <a className="text-sm font-medium text-primary transition-colors" href="#">Dashboard</a>
-              <a className="text-sm font-medium text-stone-600 dark:text-stone-300 hover:text-primary transition-colors" href="#">My Properties</a>
-              <a className="text-sm font-medium text-stone-600 dark:text-stone-300 hover:text-primary transition-colors" href="#">Invoices</a>
-              <a className="text-sm font-medium text-stone-600 dark:text-stone-300 hover:text-primary transition-colors" href="#">Settings</a>
+              <a className="text-sm font-medium text-primary transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary rounded" href="#">Dashboard</a>
+              <a className="text-sm font-medium text-stone-600 dark:text-stone-300 hover:text-primary transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary rounded" href="#">My Properties</a>
+              <a className="text-sm font-medium text-stone-600 dark:text-stone-300 hover:text-primary transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary rounded" href="#">Invoices</a>
+              <a className="text-sm font-medium text-stone-600 dark:text-stone-300 hover:text-primary transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary rounded" href="#">Settings</a>
             </div>
             <div className="flex items-center gap-4">
-              <button className="hidden sm:flex items-center justify-center bg-primary hover:bg-primary-hover text-white px-4 py-2 rounded-lg text-sm font-semibold shadow-sm transition-all hover:shadow-md">
-                <span className="material-symbols-outlined text-[20px] mr-2">add_circle</span>
+              <button className="hidden sm:flex items-center justify-center bg-primary hover:bg-primary-hover text-white px-4 py-2 rounded-lg text-sm font-semibold shadow-sm transition-all hover:shadow-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">
+                <span className="material-symbols-outlined text-[20px] mr-2" aria-hidden="true">add_circle</span>
                 Request Service
               </button>
-              <button className="relative p-2 text-stone-500 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-700 rounded-lg transition-colors">
-                <span className="material-symbols-outlined">notifications</span>
+              <button
+                aria-label="Notifications"
+                className="relative p-2 text-stone-500 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-700 rounded-lg transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+              >
+                <span className="material-symbols-outlined" aria-hidden="true">notifications</span>
                 <span className="absolute top-2 right-2 size-2 bg-secondary rounded-full border border-card-light dark:border-surface-dark"></span>
               </button>
               <button
                 onClick={handleLogout}
-                className="flex items-center justify-center p-2 text-stone-500 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-700 rounded-lg transition-colors"
+                className="flex items-center justify-center p-2 text-stone-500 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-700 rounded-lg transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+                aria-label="Sign out"
                 title="Sign Out"
               >
-                <span className="material-symbols-outlined">logout</span>
+                <span className="material-symbols-outlined" aria-hidden="true">logout</span>
               </button>
               <div className="size-9 rounded-full bg-stone-200 overflow-hidden border border-stone-200 dark:border-stone-600 cursor-pointer">
                 <img alt="User Profile" className="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCooRgWQXUK6jdIrdSYeqWjfVhT4B0FxuYni-tjM9KsX1cZKRV5fTBR9UrjqYKTqWnuvy1gxEU4T3T32MBXL4x7oP--xNRoGzlR_sdj6JplWyzuyVVtdPedCQ3k-TSA1LDYnssuJhZxtaKmPDNwzJe3yXkMbAyW0xEpTXlBfUkqYMB2RQ6O0EVdeanIJf1itIlcMo8zzIeL6xM7OMoE3KlTbLV2_2hGD4fVbVTrSZ3k0s3U9Cx0JyLyGiAWGTWqsY4fmqqn4RcdiKtb"/>
@@ -137,7 +141,7 @@ export default function Dashboard() {
             <section className="bg-card-light dark:bg-surface-dark rounded-xl shadow-sm border border-stone-200 dark:border-stone-700 flex flex-col">
               <div className="px-6 py-5 border-b border-stone-100 dark:border-stone-700 flex justify-between items-center">
                 <h3 className="text-lg font-bold text-stone-800 dark:text-white">Recent Updates</h3>
-                <button className="text-sm font-medium text-primary hover:text-primary-hover">View All</button>
+                <button className="text-sm font-medium text-primary hover:text-primary-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary rounded">View All</button>
               </div>
               <div className="p-6">
                 <div className="flex gap-4 mb-8 relative group">
@@ -216,8 +220,18 @@ export default function Dashboard() {
                 <div className="flex items-center justify-between mb-4 px-2">
                   <span className="text-sm font-semibold text-stone-800 dark:text-white">October 2023</span>
                   <div className="flex gap-1">
-                    <button className="p-1 hover:bg-stone-100 dark:hover:bg-stone-700 rounded text-stone-500"><span className="material-symbols-outlined text-sm">chevron_left</span></button>
-                    <button className="p-1 hover:bg-stone-100 dark:hover:bg-stone-700 rounded text-stone-500"><span className="material-symbols-outlined text-sm">chevron_right</span></button>
+                    <button
+                      aria-label="Previous month"
+                      className="p-1 hover:bg-stone-100 dark:hover:bg-stone-700 rounded text-stone-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"
+                    >
+                      <span className="material-symbols-outlined text-sm" aria-hidden="true">chevron_left</span>
+                    </button>
+                    <button
+                      aria-label="Next month"
+                      className="p-1 hover:bg-stone-100 dark:hover:bg-stone-700 rounded text-stone-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary"
+                    >
+                      <span className="material-symbols-outlined text-sm" aria-hidden="true">chevron_right</span>
+                    </button>
                   </div>
                 </div>
                 <div className="space-y-3">
@@ -255,7 +269,7 @@ export default function Dashboard() {
                     <span className="material-symbols-outlined text-stone-400 text-sm group-hover:text-primary">arrow_forward_ios</span>
                   </div>
                 </div>
-                <button className="w-full mt-4 py-2 text-sm text-center text-primary font-medium hover:bg-orange-50 dark:hover:bg-orange-900/20 rounded-lg transition-colors">
+                <button className="w-full mt-4 py-2 text-sm text-center text-primary font-medium hover:bg-orange-50 dark:hover:bg-orange-900/20 rounded-lg transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">
                   View Full Calendar
                 </button>
               </div>
@@ -269,12 +283,12 @@ export default function Dashboard() {
                 <h3 className="text-lg font-bold mb-2">Need Assistance?</h3>
                 <p className="text-orange-50 text-sm mb-6">Your property manager, David, is available for urgent requests.</p>
                 <div className="flex flex-col gap-3">
-                  <button className="flex items-center justify-center w-full bg-white text-primary font-bold py-2.5 rounded-lg text-sm hover:bg-orange-50 transition-colors">
-                    <span className="material-symbols-outlined text-lg mr-2">call</span>
+                  <button className="flex items-center justify-center w-full bg-white text-primary font-bold py-2.5 rounded-lg text-sm hover:bg-orange-50 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">
+                    <span className="material-symbols-outlined text-lg mr-2" aria-hidden="true">call</span>
                     Call Manager
                   </button>
-                  <button className="flex items-center justify-center w-full bg-primary-hover border border-white/20 text-white font-bold py-2.5 rounded-lg text-sm hover:bg-black/10 transition-colors">
-                    <span className="material-symbols-outlined text-lg mr-2">mail</span>
+                  <button className="flex items-center justify-center w-full bg-primary-hover border border-white/20 text-white font-bold py-2.5 rounded-lg text-sm hover:bg-black/10 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">
+                    <span className="material-symbols-outlined text-lg mr-2" aria-hidden="true">mail</span>
                     Send Message
                   </button>
                 </div>
@@ -284,8 +298,11 @@ export default function Dashboard() {
         </div>
 
         {/* Floating Action Button */}
-        <button className="sm:hidden fixed bottom-6 right-6 size-14 bg-primary text-white rounded-full shadow-lg flex items-center justify-center z-50 hover:bg-primary-hover transition-transform hover:scale-105 active:scale-95">
-          <span className="material-symbols-outlined text-2xl">add</span>
+        <button
+          aria-label="Request Service"
+          className="sm:hidden fixed bottom-6 right-6 size-14 bg-primary text-white rounded-full shadow-lg flex items-center justify-center z-50 hover:bg-primary-hover transition-transform hover:scale-105 active:scale-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+        >
+          <span className="material-symbols-outlined text-2xl" aria-hidden="true">add</span>
         </button>
       </main>
     </div>
