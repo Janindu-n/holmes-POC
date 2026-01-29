@@ -21,7 +21,10 @@ export default function Home() {
             <a className="text-sm font-medium text-stone-600 hover:text-primary dark:text-stone-300 dark:hover:text-white transition-colors" href="#pricing">Pricing</a>
           </nav>
           <div className="flex items-center gap-4">
-            <Link href="/dashboard" className="flex items-center justify-center rounded-lg bg-primary px-4 py-2 text-sm font-bold text-white shadow-sm hover:bg-orange-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary transition-all">
+            <Link href="/auth/login" className="text-sm font-bold text-stone-600 hover:text-primary dark:text-stone-300 transition-colors">
+              Sign In
+            </Link>
+            <Link href="/onboarding" className="flex items-center justify-center rounded-lg bg-primary px-4 py-2 text-sm font-bold text-white shadow-sm hover:bg-orange-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary transition-all">
               Get a Quote
             </Link>
           </div>
@@ -47,7 +50,7 @@ export default function Home() {
                 Premium maintenance for overseas owners. We provide smart security, vetted professionals, and live video updates so you never have to worry.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 mt-2">
-                <Link href="/dashboard" className="inline-flex items-center justify-center rounded-lg bg-primary px-6 py-3.5 text-base font-bold text-white shadow-lg shadow-orange-500/20 hover:bg-orange-700 hover:shadow-orange-500/40 transition-all duration-200">
+                <Link href="/onboarding" className="inline-flex items-center justify-center rounded-lg bg-primary px-6 py-3.5 text-base font-bold text-white shadow-lg shadow-orange-500/20 hover:bg-orange-700 hover:shadow-orange-500/40 transition-all duration-200">
                   Get a Free Quote
                 </Link>
                 <button className="inline-flex items-center justify-center rounded-lg border border-stone-200 bg-white px-6 py-3.5 text-base font-bold text-stone-700 shadow-sm hover:bg-stone-50 hover:text-primary dark:border-stone-700 dark:bg-stone-800 dark:text-stone-300 dark:hover:bg-stone-700 transition-all duration-200">
@@ -186,7 +189,7 @@ export default function Home() {
                 </div>
               </div>
               <div className="mt-10">
-                <Link href="/dashboard" className="inline-flex items-center justify-center rounded-lg bg-primary px-6 py-3 text-sm font-bold text-white shadow-lg shadow-orange-500/20 hover:bg-orange-700 transition-all">
+                <Link href="/onboarding" className="inline-flex items-center justify-center rounded-lg bg-primary px-6 py-3 text-sm font-bold text-white shadow-lg shadow-orange-500/20 hover:bg-orange-700 transition-all">
                   Start Your Plan
                   <span className="material-symbols-outlined ml-2 text-lg">arrow_forward</span>
                 </Link>
@@ -203,14 +206,14 @@ export default function Home() {
             <span className="material-symbols-outlined text-4xl">format_quote</span>
           </div>
           <h2 className="text-2xl font-bold leading-relaxed text-stone-900 dark:text-white md:text-3xl">
-            &quot;Living in London while owning property in New York used to be a nightmare. HomeCare changed everything. The video reports give me absolute peace of mind.&quot;
+            &quot;Living in Melbourne while maintaining a home in Colombo used to be stressful. HomeCare changed everything. The verified specialists and live video updates give me absolute peace of mind.&quot;
           </h2>
           <div className="mt-8 flex flex-col items-center justify-center gap-2">
             <div className="size-12 overflow-hidden rounded-full bg-stone-200">
               <img alt="Customer Avatar" className="h-full w-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuASsRqylbw-D4F7Rqt0AMKPTIBRASKQ0J9o24VlmGnMYE7MOP7ibHKmGIpgJjt7TX70Pqxu0A_MvHAskLl5MtveI5whEhbgJVfAFLHam-qx1Dh4wP_jn-xxqI-7yjPV5ih8VG355rR69CQqWtaIHhZIKg1sdXETfI49qE2iKbk-8XVzkYcXUrPyVqkrc943kSompL9J1rroSmCioTVNKs7QMzRUqGKb3WM3v_0Av64H3_X1jp7Vb0WGRlUoDRkPZxw-Khjiiii0gApF"/>
             </div>
-            <div className="text-base font-semibold text-stone-900 dark:text-white">Michael R.</div>
-            <div className="text-sm text-stone-500">Property Owner, New York</div>
+            <div className="text-base font-semibold text-stone-900 dark:text-white">Aruni P.</div>
+            <div className="text-sm text-stone-500">Property Owner, Melbourne</div>
           </div>
         </div>
       </section>
@@ -226,7 +229,7 @@ export default function Home() {
             Join hundreds of homeowners who trust HomeCare. Get a custom quote tailored to your property&apos;s needs today.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <Link href="/dashboard" className="flex items-center justify-center rounded-lg bg-white px-8 py-4 text-base font-bold text-primary shadow-lg hover:bg-orange-50 transition-all">
+            <Link href="/onboarding" className="flex items-center justify-center rounded-lg bg-white px-8 py-4 text-base font-bold text-primary shadow-lg hover:bg-orange-50 transition-all">
               Get a Free Quote
             </Link>
             <button className="flex items-center justify-center rounded-lg bg-orange-800 border border-orange-600 px-8 py-4 text-base font-bold text-white hover:bg-orange-700 transition-all">
