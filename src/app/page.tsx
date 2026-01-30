@@ -26,7 +26,7 @@ export default function Home() {
             <div className="flex size-8 items-center justify-center rounded-lg bg-primary text-white">
               <span className="material-symbols-outlined text-xl">home_app_logo</span>
             </div>
-            <span className="text-xl font-bold tracking-tight">HomeCare</span>
+            <span className="text-xl font-bold tracking-tight">Holmes Homes</span>
           </div>
           <nav className="hidden md:flex flex-1 justify-center gap-8">
             <a className="text-sm font-medium text-stone-600 hover:text-primary dark:text-stone-300 dark:hover:text-white transition-colors" href="#services">Services</a>
@@ -72,7 +72,10 @@ export default function Home() {
                 <Link href="/jobs/submit" className="inline-flex items-center justify-center rounded-lg bg-primary px-6 py-3.5 text-base font-bold text-white shadow-lg shadow-orange-500/20 hover:bg-orange-700 hover:shadow-orange-500/40 transition-all duration-200">
                   Get a Free Quote
                 </Link>
-                <button className="inline-flex items-center justify-center rounded-lg border border-stone-200 bg-white px-6 py-3.5 text-base font-bold text-stone-700 shadow-sm hover:bg-stone-50 hover:text-primary dark:border-stone-700 dark:bg-stone-800 dark:text-stone-300 dark:hover:bg-stone-700 transition-all duration-200">
+                <button
+                  className="inline-flex items-center justify-center rounded-lg border border-stone-200 bg-white px-6 py-3.5 text-base font-bold text-stone-700 shadow-sm hover:bg-stone-50 hover:text-primary dark:border-stone-700 dark:bg-stone-800 dark:text-stone-300 dark:hover:bg-stone-700 transition-all duration-200"
+                  aria-label="Watch Video"
+                >
                   <span className="material-symbols-outlined mr-2">play_circle</span> Watch Video
                 </button>
               </div>
@@ -225,7 +228,7 @@ export default function Home() {
             <span className="material-symbols-outlined text-4xl">format_quote</span>
           </div>
           <h2 className="text-2xl font-bold leading-relaxed text-stone-900 dark:text-white md:text-3xl">
-            &quot;Living in Melbourne while maintaining a home in Colombo used to be stressful. HomeCare changed everything. The verified specialists and live video updates give me absolute peace of mind.&quot;
+            &quot;Living in Melbourne while maintaining a home in Colombo used to be stressful. Holmes Homes changed everything. The verified specialists and live video updates give me absolute peace of mind.&quot;
           </h2>
           <div className="mt-8 flex flex-col items-center justify-center gap-2">
             <div className="size-12 overflow-hidden rounded-full bg-stone-200">
@@ -245,7 +248,7 @@ export default function Home() {
             Ready to secure your peace of mind?
           </h2>
           <p className="mx-auto max-w-2xl text-lg text-orange-100 mb-10">
-            Join hundreds of homeowners who trust HomeCare. Get a custom quote tailored to your property&apos;s needs today.
+            Join hundreds of homeowners who trust Holmes Homes. Get a custom quote tailored to your property&apos;s needs today.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <Link href="/jobs/submit" className="flex items-center justify-center rounded-lg bg-white px-8 py-4 text-base font-bold text-primary shadow-lg hover:bg-orange-50 transition-all">
@@ -270,7 +273,7 @@ export default function Home() {
                 <div className="flex size-6 items-center justify-center rounded bg-primary text-white">
                   <span className="material-symbols-outlined text-sm">home_app_logo</span>
                 </div>
-                <span className="font-bold">HomeCare</span>
+                <span className="font-bold">Holmes Homes</span>
               </div>
               <p className="text-sm text-stone-500 dark:text-stone-400">
                 Smart, secure, and transparent home maintenance for the modern homeowner.
@@ -301,7 +304,7 @@ export default function Home() {
             </div>
           </div>
           <div className="border-t border-stone-100 dark:border-stone-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-sm text-stone-400">© {new Date().getFullYear()} HomeCare Inc. All rights reserved.</p>
+            <p className="text-sm text-stone-400">© {new Date().getFullYear()} Holmes Homes Inc. All rights reserved.</p>
             <div className="flex gap-4 text-stone-400">
               <a className="hover:text-primary transition-colors" href="#">
                 <span className="sr-only">Twitter</span>

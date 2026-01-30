@@ -88,7 +88,7 @@ export default function JobDetails({ params }: { params: Promise<{ id: string }>
         notes
       };
 
-      const updatedTimeline = job.timeline.map(t => ({ ...t, isActive: false }));
+      const updatedTimeline = (job.timeline || []).map(t => ({ ...t, isActive: false }));
       updatedTimeline.push(newTimelineEntry);
 
       await updateDoc(doc(db!, 'jobs', id), {
@@ -133,7 +133,7 @@ export default function JobDetails({ params }: { params: Promise<{ id: string }>
       const quoteDoc = await addDoc(collection(db!, 'quotations'), newQuote);
 
       const newStatus: JobStatus = 'quotation_submitted';
-      const updatedTimeline = job.timeline.map(t => ({ ...t, isActive: false }));
+      const updatedTimeline = (job.timeline || []).map(t => ({ ...t, isActive: false }));
       updatedTimeline.push({
         status: newStatus,
         updatedAt: now,
@@ -180,7 +180,7 @@ export default function JobDetails({ params }: { params: Promise<{ id: string }>
       });
 
       const newStatus: JobStatus = action === 'accepted' ? 'quotation_accepted' : 'consultation_started';
-      const updatedTimeline = job.timeline.map(t => ({ ...t, isActive: false }));
+      const updatedTimeline = (job.timeline || []).map(t => ({ ...t, isActive: false }));
       updatedTimeline.push({
         status: newStatus,
         updatedAt: now,
@@ -391,7 +391,7 @@ export default function JobDetails({ params }: { params: Promise<{ id: string }>
             <section className="bg-white dark:bg-surface-dark rounded-2xl shadow-xl border border-stone-200 dark:border-stone-700 p-8 h-fit">
               <h2 className="text-xl font-black text-stone-900 dark:text-white mb-8">Job Timeline</h2>
               <div className="space-y-8 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px before:h-full before:w-0.5 before:bg-gradient-to-b before:from-primary before:to-stone-200 dark:before:to-stone-800">
-                {job.timeline.slice().reverse().map((entry, idx) => (
+                {(job.timeline || []).slice().reverse().map((entry, idx) => (
                   <div key={idx} className="relative flex items-start">
                     <div className={`absolute left-0 top-1 flex h-10 w-10 items-center justify-center rounded-full border-4 border-white dark:border-surface-dark shadow shadow-primary/20 ${
                       entry.isActive ? 'bg-primary text-white scale-110 z-10' : 'bg-stone-200 text-stone-500 dark:bg-stone-800'

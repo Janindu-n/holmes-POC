@@ -16,14 +16,21 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!auth) return;
+    if (!auth) {
+      setLoading(false);
+      return;
+    }
 
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         if (db) {
-          const userDoc = await getDoc(doc(db!, 'users', user.uid));
-          if (userDoc.exists()) {
-            setUserProfile(userDoc.data() as UserProfile);
+          try {
+            const userDoc = await getDoc(doc(db, 'users', user.uid));
+            if (userDoc.exists()) {
+              setUserProfile(userDoc.data() as UserProfile);
+            }
+          } catch (error) {
+            console.error("Error fetching user profile:", error);
           }
         }
       } else {
