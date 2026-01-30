@@ -14,7 +14,7 @@ const firebaseConfig = {
 };
 
 // Check if we have the minimum required config to initialize Firebase
-const isConfigValid = !!firebaseConfig.apiKey;
+const isConfigValid = !!firebaseConfig.apiKey && firebaseConfig.apiKey !== "undefined";
 
 // Initialize Firebase
 // During build time (SSR), we avoid initializing if keys are missing to prevent prerendering errors.
@@ -41,7 +41,9 @@ const auth: Auth | null = (() => {
   try {
     return getAuth(app);
   } catch (error) {
-    console.error("Firebase Auth initialization error:", error);
+    if (typeof window !== "undefined") {
+      console.error("Firebase Auth initialization error:", error);
+    }
     return null;
   }
 })();
@@ -51,7 +53,9 @@ const db: Firestore | null = (() => {
   try {
     return getFirestore(app);
   } catch (error) {
-    console.error("Firebase Firestore initialization error:", error);
+    if (typeof window !== "undefined") {
+      console.error("Firebase Firestore initialization error:", error);
+    }
     return null;
   }
 })();
