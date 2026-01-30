@@ -15,6 +15,13 @@ export default function Login() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Security: Verify Firebase configuration is available
+    if (!auth) {
+      setError('Authentication is temporarily unavailable. Please try again later.');
+      return;
+    }
+
     setLoading(true);
     setError('');
 
