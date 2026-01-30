@@ -56,16 +56,23 @@ export default function InvoicesPage() {
           <p className="text-stone-500 dark:text-stone-400 font-medium">Manage your billing and payments.</p>
         </div>
 
-        <div className="bg-white dark:bg-surface-dark rounded-2xl shadow-xl border border-stone-200 dark:border-stone-700 overflow-hidden p-12 text-center">
-          <div className="flex justify-center mb-6">
-            <div className="flex size-20 items-center justify-center rounded-2xl bg-orange-50 text-primary dark:bg-orange-900/20">
-              <span className="material-symbols-outlined text-5xl">receipt_long</span>
-            </div>
+        <div className="bg-white dark:bg-surface-dark rounded-2xl shadow-xl border border-stone-200 dark:border-stone-700 overflow-hidden">
+          <div className="p-8 border-b border-stone-100 dark:border-stone-800 flex justify-between items-center">
+            <h2 className="text-xl font-bold text-stone-800 dark:text-white">Recent Invoices</h2>
+            <button className="text-primary font-bold text-sm hover:underline">Download All (CSV)</button>
           </div>
-          <h2 className="text-2xl font-bold text-stone-800 dark:text-white mb-2">No Invoices Yet</h2>
-          <p className="text-stone-500 dark:text-stone-400 max-w-md mx-auto">
-            Once you complete jobs and process payments, your invoices will appear here for your records.
-          </p>
+
+          <div className="p-12 text-center">
+            <div className="flex justify-center mb-6">
+              <div className="flex size-20 items-center justify-center rounded-2xl bg-orange-50 text-primary dark:bg-orange-900/20">
+                <span className="material-symbols-outlined text-5xl">receipt_long</span>
+              </div>
+            </div>
+            <h2 className="text-2xl font-bold text-stone-800 dark:text-white mb-2">No Invoices Yet</h2>
+            <p className="text-stone-500 dark:text-stone-400 max-w-md mx-auto">
+              Once you complete jobs and process payments, your invoices will appear here for your records.
+            </p>
+          </div>
         </div>
       </main>
     </div>
