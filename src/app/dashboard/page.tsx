@@ -5,8 +5,19 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { auth } from '@/lib/firebase';
 import { signOut } from 'firebase/auth';
-import MuxPlayer from '@mux/mux-player-react';
+import dynamic from 'next/dynamic';
 import { Job, JobStatus, JOB_STATUS_LABELS, JOB_STATUS_ORDER } from '@/types/job';
+
+const MuxPlayer = dynamic(() => import('@mux/mux-player-react'), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-full bg-stone-100 dark:bg-stone-800 animate-pulse flex items-center justify-center">
+      <span className="material-symbols-outlined text-stone-400 text-4xl animate-spin">
+        progress_activity
+      </span>
+    </div>
+  ),
+});
 
 const MOCK_JOB: Job = {
   id: 'job-123',
