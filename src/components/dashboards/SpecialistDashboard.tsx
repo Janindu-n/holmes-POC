@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { collection, query, where, onSnapshot, orderBy, limit } from 'firebase/firestore';
+import { collection, query, where, onSnapshot, orderBy, limit, updateDoc, doc, getDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { Job } from '@/types/job';
 import { UserProfile } from '@/types/user';
@@ -26,11 +26,12 @@ export default function SpecialistDashboard({ user }: SpecialistDashboardProps) 
       orderBy('createdAt', 'desc')
     );
 
-    // Fetch available jobs (not yet assigned)
+    // Fetch available jobs (not yet assigned) that match specialist specialty
     const availableJobsQuery = query(
       collection(db!, 'jobs'),
       where('contractorId', '==', null),
       where('status', '==', 'consultation_pending'),
+      where('specialty', '==', user.specialty || 'General'),
       orderBy('createdAt', 'desc'),
       limit(10)
     );
@@ -48,7 +49,42 @@ export default function SpecialistDashboard({ user }: SpecialistDashboardProps) 
       unsubscribeMyJobs();
       unsubscribeAvailableJobs();
     };
-  }, [user.uid]);
+  }, [user.uid, user.specialty]);
+
+  const handlePickUpJob = async (jobId: string) => {
+    if (!db) return;
+    try {
+      const now = new Date().toISOString();
+      const jobRef = doc(db!, 'jobs', jobId);
+
+      // Fetch job to get current timeline
+      const jobSnap = await getDoc(jobRef);
+      if (!jobSnap.exists()) return;
+      const jobData = jobSnap.data() as Job;
+
+      const newTimelineEntry = {
+        status: 'picked_up' as const,
+        updatedAt: now,
+        completedAt: null,
+        isActive: true,
+        notes: `Job picked up by specialist ${user.name}.`
+      };
+
+      const updatedTimeline = (jobData.timeline || []).map(t => ({ ...t, isActive: false }));
+      updatedTimeline.push(newTimelineEntry);
+
+      await updateDoc(jobRef, {
+        contractorId: user.uid,
+        contractorName: user.name,
+        currentSpecialist: user.name,
+        status: 'picked_up',
+        timelineDisplayStatus: 'Job Picked Up',
+        timeline: updatedTimeline
+      });
+    } catch (error) {
+      console.error('Error picking up job:', error);
+    }
+  };
 
   return (
     <div className="flex flex-col gap-8">
@@ -87,7 +123,10 @@ export default function SpecialistDashboard({ user }: SpecialistDashboardProps) 
                       </div>
                       <div className="flex-grow">
                         <div className="flex justify-between items-start">
-                          <h4 className="font-bold text-stone-800 dark:text-white group-hover:text-primary transition-colors line-clamp-1">{job.description}</h4>
+                          <div className="flex flex-col">
+                            <h4 className="font-bold text-stone-800 dark:text-white group-hover:text-primary transition-colors line-clamp-1">{job.description}</h4>
+                            <span className="text-[10px] font-black text-primary uppercase tracking-wider">{job.specialty}</span>
+                          </div>
                           <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded bg-orange-100 dark:bg-orange-900/40 text-primary">
                             {job.status.replace('_', ' ')}
                           </span>
@@ -129,7 +168,10 @@ export default function SpecialistDashboard({ user }: SpecialistDashboardProps) 
                     >
                       <div>
                         <div className="flex justify-between items-start mb-2">
-                          <span className="px-2 py-0.5 bg-blue-50 text-blue-600 text-[10px] font-black uppercase rounded tracking-wider">{job.nature}</span>
+                          <div className="flex gap-2">
+                            <span className="px-2 py-0.5 bg-blue-50 text-blue-600 text-[10px] font-black uppercase rounded tracking-wider">{job.nature}</span>
+                            <span className="px-2 py-0.5 bg-orange-50 text-primary text-[10px] font-black uppercase rounded tracking-wider">{job.specialty}</span>
+                          </div>
                           <span className="text-[10px] text-stone-400">{new Date(job.createdAt).toLocaleDateString()}</span>
                         </div>
                         <h4 className="font-bold text-stone-800 dark:text-white line-clamp-2 min-h-[3rem]">{job.description}</h4>
@@ -137,12 +179,20 @@ export default function SpecialistDashboard({ user }: SpecialistDashboardProps) 
                           <span className="material-symbols-outlined text-sm">location_on</span> {job.location}
                         </div>
                       </div>
-                      <Link
-                        href={`/jobs/${job.id}`}
-                        className="w-full bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700 hover:border-primary hover:text-primary py-2 rounded-lg text-xs font-bold text-center transition-all"
-                      >
-                        Review & Respond
-                      </Link>
+                      <div className="flex gap-2">
+                        <Link
+                          href={`/jobs/${job.id}`}
+                          className="flex-1 bg-white dark:bg-stone-800 border border-stone-200 dark:border-stone-700 hover:border-primary hover:text-primary py-2 rounded-lg text-[10px] font-bold text-center transition-all"
+                        >
+                          Details
+                        </Link>
+                        <button
+                          onClick={() => job.id && handlePickUpJob(job.id)}
+                          className="flex-1 bg-primary text-white hover:bg-primary-hover py-2 rounded-lg text-[10px] font-bold transition-all"
+                        >
+                          Pick Up Job
+                        </button>
+                      </div>
                     </div>
                   ))}
                 </div>

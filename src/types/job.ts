@@ -1,3 +1,5 @@
+import { Specialty } from './user';
+
 export type JobStatus =
   | 'consultation_pending'
   | 'consultation_started'
@@ -28,6 +30,7 @@ export interface Job {
   id?: string;
   customerId: string;
   customerName: string;
+  specialty: Specialty;
   contractorId: string | null;
   contractorName: string | null;
   description: string;

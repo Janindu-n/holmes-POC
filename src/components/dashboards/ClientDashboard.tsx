@@ -77,7 +77,10 @@ export default function ClientDashboard({ user }: ClientDashboardProps) {
                       </div>
                       <div className="flex-grow">
                         <div className="flex justify-between items-start">
-                          <h4 className="font-bold text-stone-800 dark:text-white group-hover:text-primary transition-colors line-clamp-1">{job.description}</h4>
+                          <div className="flex flex-col">
+                            <h4 className="font-bold text-stone-800 dark:text-white group-hover:text-primary transition-colors line-clamp-1">{job.description}</h4>
+                            <span className="text-[10px] font-black text-primary uppercase tracking-wider">{job.specialty}</span>
+                          </div>
                           <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded bg-stone-100 dark:bg-stone-800 text-stone-500 dark:text-stone-400">
                             {job.status.replace('_', ' ')}
                           </span>

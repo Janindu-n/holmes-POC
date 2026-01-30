@@ -6,7 +6,7 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { doc, getDoc, collection, addDoc } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
 import { Job, JobStatus } from '@/types/job';
-import { UserProfile } from '@/types/user';
+import { UserProfile, SPECIALTIES, Specialty } from '@/types/user';
 
 export default function SubmitJob() {
   const router = useRouter();
@@ -18,9 +18,13 @@ export default function SubmitJob() {
   const [description, setDescription] = useState('');
   const [location, setLocation] = useState('');
   const [nature, setNature] = useState<'home' | 'commercial' | 'industrial'>('home');
+  const [specialty, setSpecialty] = useState<Specialty>('General');
 
   useEffect(() => {
-    if (!auth) return;
+    if (!auth) {
+      setLoading(false);
+      return;
+    }
 
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
@@ -63,6 +67,7 @@ export default function SubmitJob() {
         description,
         location,
         nature,
+        specialty,
         status: initialStatus,
         timelineDisplayStatus: 'Consultation Pending',
         currentSpecialist: null,
@@ -135,6 +140,23 @@ export default function SubmitJob() {
                   </button>
                 ))}
               </div>
+            </div>
+
+            <div>
+              <label htmlFor="specialty" className="block text-sm font-bold text-stone-700 dark:text-stone-300 mb-2">
+                Specialty Required
+              </label>
+              <select
+                id="specialty"
+                required
+                className="w-full px-4 py-2 rounded-lg border border-stone-300 dark:border-stone-600 dark:bg-stone-800 focus:ring-2 focus:ring-primary focus:border-primary transition-all outline-none"
+                value={specialty}
+                onChange={(e) => setSpecialty(e.target.value as Specialty)}
+              >
+                {SPECIALTIES.map((s) => (
+                  <option key={s} value={s}>{s}</option>
+                ))}
+              </select>
             </div>
 
             <div>

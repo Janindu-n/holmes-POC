@@ -214,6 +214,39 @@ export default function JobDetails({ params }: { params: Promise<{ id: string }>
   const isCustomer = userProfile.role === 'client';
   const isSpecialist = userProfile.role === 'specialist';
   const isAssignedSpecialist = job.contractorId === userProfile.uid;
+  const canPickUp = isSpecialist && !job.contractorId && job.status === 'consultation_pending' && job.specialty === userProfile.specialty;
+
+  const handlePickUp = async () => {
+    if (!db || !userProfile) return;
+    setActionLoading(true);
+    try {
+      const now = new Date().toISOString();
+      const newStatus: JobStatus = 'picked_up';
+      const newTimelineEntry: TimelineEntry = {
+        status: newStatus,
+        updatedAt: now,
+        completedAt: null,
+        isActive: true,
+        notes: `Job picked up by specialist ${userProfile.name}.`
+      };
+
+      const updatedTimeline = (job.timeline || []).map(t => ({ ...t, isActive: false }));
+      updatedTimeline.push(newTimelineEntry);
+
+      await updateDoc(doc(db!, 'jobs', id), {
+        contractorId: userProfile.uid,
+        contractorName: userProfile.name,
+        currentSpecialist: userProfile.name,
+        status: newStatus,
+        timelineDisplayStatus: 'Job Picked Up',
+        timeline: updatedTimeline
+      });
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setActionLoading(false);
+    }
+  };
 
   return (
     <div className="bg-dashboard-bg dark:bg-background-dark min-h-screen flex flex-col transition-colors duration-200">
@@ -228,9 +261,14 @@ export default function JobDetails({ params }: { params: Promise<{ id: string }>
               <div className="p-8">
                 <div className="flex justify-between items-start mb-6">
                   <div>
-                    <span className="px-3 py-1 bg-primary/10 text-primary text-xs font-black uppercase rounded-full tracking-wider mb-2 inline-block">
-                      {job.nature}
-                    </span>
+                    <div className="flex gap-2 mb-2">
+                      <span className="px-3 py-1 bg-primary/10 text-primary text-xs font-black uppercase rounded-full tracking-wider inline-block">
+                        {job.nature}
+                      </span>
+                      <span className="px-3 py-1 bg-orange-100 text-primary text-xs font-black uppercase rounded-full tracking-wider inline-block">
+                        {job.specialty}
+                      </span>
+                    </div>
                     <h1 className="text-3xl font-black text-stone-900 dark:text-white">{job.description}</h1>
                     <div className="flex items-center gap-2 mt-2 text-stone-500 dark:text-stone-400">
                       <span className="material-symbols-outlined text-lg">location_on</span>
@@ -256,13 +294,23 @@ export default function JobDetails({ params }: { params: Promise<{ id: string }>
 
                 {/* Role-Based Actions */}
                 <div className="mt-8">
-                  {isSpecialist && job.status === 'consultation_pending' && (
+                  {canPickUp && (
                     <button
-                      onClick={() => updateJobStatus('consultation_started', 'Consultation In Progress', 'Specialist accepted the consultation request.')}
+                      onClick={handlePickUp}
                       disabled={actionLoading}
                       className="w-full bg-primary hover:bg-primary-hover text-white font-black py-4 rounded-xl shadow-lg transition-all"
                     >
-                      {actionLoading ? 'Processing...' : 'Accept Consultation'}
+                      {actionLoading ? 'Processing...' : 'Pick Up Job'}
+                    </button>
+                  )}
+
+                  {isAssignedSpecialist && job.status === 'picked_up' && (
+                    <button
+                      onClick={() => updateJobStatus('consultation_started', 'Consultation In Progress', 'Specialist started the consultation.')}
+                      disabled={actionLoading}
+                      className="w-full bg-primary hover:bg-primary-hover text-white font-black py-4 rounded-xl shadow-lg transition-all"
+                    >
+                      {actionLoading ? 'Processing...' : 'Start Consultation'}
                     </button>
                   )}
 
@@ -399,6 +447,7 @@ export default function JobDetails({ params }: { params: Promise<{ id: string }>
                       <span className="material-symbols-outlined text-sm font-bold">
                         {entry.status === 'job_completed' ? 'done_all' :
                          entry.status === 'job_started' ? 'play_arrow' :
+                         entry.status === 'picked_up' ? 'handshake' :
                          entry.status.includes('quotation') ? 'payments' : 'chat_bubble'}
                       </span>
                     </div>

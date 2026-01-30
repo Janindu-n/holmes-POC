@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
+import { SPECIALTIES, Specialty } from '@/types/user';
 
 function RegisterForm() {
   const router = useRouter();
@@ -15,6 +16,7 @@ function RegisterForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
+  const [specialty, setSpecialty] = useState<Specialty>('General');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -37,6 +39,7 @@ function RegisterForm() {
         name,
         email,
         role,
+        ...(role === 'specialist' ? { specialty } : {}),
         createdAt: new Date().toISOString(),
       });
 
@@ -91,6 +94,24 @@ function RegisterForm() {
                 onChange={(e) => setEmail(e.target.value)}
               />
             </div>
+            {role === 'specialist' && (
+              <div>
+                <label htmlFor="specialty" className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1">
+                  Specialty
+                </label>
+                <select
+                  id="specialty"
+                  required
+                  className="w-full px-4 py-2 rounded-lg border border-stone-300 dark:border-stone-600 dark:bg-stone-800 focus:ring-2 focus:ring-primary focus:border-primary transition-all outline-none"
+                  value={specialty}
+                  onChange={(e) => setSpecialty(e.target.value as Specialty)}
+                >
+                  {SPECIALTIES.map((s) => (
+                    <option key={s} value={s}>{s}</option>
+                  ))}
+                </select>
+              </div>
+            )}
             <div>
               <label className="block text-sm font-medium text-stone-700 dark:text-stone-300 mb-1">
                 Password
