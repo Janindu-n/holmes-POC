@@ -1,9 +1,22 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 
 export default function Home() {
+  const [scrollY, setScrollY] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrollY(window.scrollY);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const opacity = Math.max(1 - scrollY / 400, 0);
+  const translateY = scrollY / 3;
+
   return (
     <div className="bg-background-light dark:bg-background-dark text-stone-900 dark:text-white font-display min-h-screen">
       {/* Header */}
@@ -24,7 +37,7 @@ export default function Home() {
             <Link href="/auth/login" className="text-sm font-bold text-stone-600 hover:text-primary dark:text-stone-300 transition-colors">
               Sign In
             </Link>
-            <Link href="/onboarding" className="flex items-center justify-center rounded-lg bg-primary px-4 py-2 text-sm font-bold text-white shadow-sm hover:bg-orange-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary transition-all">
+            <Link href="/jobs/submit" className="flex items-center justify-center rounded-lg bg-primary px-4 py-2 text-sm font-bold text-white shadow-sm hover:bg-orange-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary transition-all">
               Get a Quote
             </Link>
           </div>
@@ -35,7 +48,13 @@ export default function Home() {
       <section className="relative overflow-hidden bg-background-light dark:bg-background-dark pt-16 pb-20 lg:pt-24 lg:pb-28">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-8 items-center">
-            <div className="flex flex-col gap-6 text-left max-w-2xl">
+            <div
+              className="flex flex-col gap-6 text-left max-w-2xl transition-all duration-75"
+              style={{
+                opacity: opacity,
+                transform: `translateY(${translateY}px)`
+              }}
+            >
               <div className="inline-flex w-fit items-center gap-2 rounded-full border border-orange-200 bg-orange-50 px-3 py-1 text-xs font-semibold text-orange-800 dark:border-orange-900 dark:bg-orange-900/30 dark:text-orange-300">
                 <span className="relative flex h-2 w-2">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
@@ -50,7 +69,7 @@ export default function Home() {
                 Premium maintenance for overseas owners. We provide smart security, vetted professionals, and live video updates so you never have to worry.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 mt-2">
-                <Link href="/onboarding" className="inline-flex items-center justify-center rounded-lg bg-primary px-6 py-3.5 text-base font-bold text-white shadow-lg shadow-orange-500/20 hover:bg-orange-700 hover:shadow-orange-500/40 transition-all duration-200">
+                <Link href="/jobs/submit" className="inline-flex items-center justify-center rounded-lg bg-primary px-6 py-3.5 text-base font-bold text-white shadow-lg shadow-orange-500/20 hover:bg-orange-700 hover:shadow-orange-500/40 transition-all duration-200">
                   Get a Free Quote
                 </Link>
                 <button className="inline-flex items-center justify-center rounded-lg border border-stone-200 bg-white px-6 py-3.5 text-base font-bold text-stone-700 shadow-sm hover:bg-stone-50 hover:text-primary dark:border-stone-700 dark:bg-stone-800 dark:text-stone-300 dark:hover:bg-stone-700 transition-all duration-200">
@@ -189,7 +208,7 @@ export default function Home() {
                 </div>
               </div>
               <div className="mt-10">
-                <Link href="/onboarding" className="inline-flex items-center justify-center rounded-lg bg-primary px-6 py-3 text-sm font-bold text-white shadow-lg shadow-orange-500/20 hover:bg-orange-700 transition-all">
+                <Link href="/jobs/submit" className="inline-flex items-center justify-center rounded-lg bg-primary px-6 py-3 text-sm font-bold text-white shadow-lg shadow-orange-500/20 hover:bg-orange-700 transition-all">
                   Start Your Plan
                   <span className="material-symbols-outlined ml-2 text-lg">arrow_forward</span>
                 </Link>
@@ -229,7 +248,7 @@ export default function Home() {
             Join hundreds of homeowners who trust HomeCare. Get a custom quote tailored to your property&apos;s needs today.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <Link href="/onboarding" className="flex items-center justify-center rounded-lg bg-white px-8 py-4 text-base font-bold text-primary shadow-lg hover:bg-orange-50 transition-all">
+            <Link href="/jobs/submit" className="flex items-center justify-center rounded-lg bg-white px-8 py-4 text-base font-bold text-primary shadow-lg hover:bg-orange-50 transition-all">
               Get a Free Quote
             </Link>
             <button className="flex items-center justify-center rounded-lg bg-orange-800 border border-orange-600 px-8 py-4 text-base font-bold text-white hover:bg-orange-700 transition-all">
