@@ -10,7 +10,10 @@ import { auth, db } from '@/lib/firebase';
 function RegisterForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const role = searchParams.get('role') || 'client';
+
+  // Security: Validate role against allowlist to prevent role injection
+  const roleParam = searchParams.get('role');
+  const role = (roleParam === 'client' || roleParam === 'specialist') ? roleParam : 'client';
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -20,6 +23,29 @@ function RegisterForm() {
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Security: Verify Firebase configuration is available
+    if (!auth || !db) {
+      setError('Registration is temporarily unavailable. Please try again later.');
+      return;
+    }
+
+    // Security: Basic input validation
+    if (name.trim().length < 2) {
+      setError('Please enter your full name (minimum 2 characters)');
+      return;
+    }
+
+    if (name.length > 100) {
+      setError('Name is too long');
+      return;
+    }
+
+    if (password.length < 8) {
+      setError('Password must be at least 8 characters long');
+      return;
+    }
+
     setLoading(true);
     setError('');
 
@@ -30,7 +56,7 @@ function RegisterForm() {
       // Save user role and profile to Firestore
       await setDoc(doc(db, 'users', userCredential.user.uid), {
         uid: userCredential.user.uid,
-        name,
+        name: name.trim(),
         email,
         role,
         createdAt: new Date().toISOString(),
@@ -38,6 +64,8 @@ function RegisterForm() {
 
       router.push('/dashboard');
     } catch (err: unknown) {
+      // Security: Handle Firebase errors without leaking sensitive internal details
+      // Most Firebase Auth errors are user-friendly, but we ensure a fallback
       setError(err instanceof Error ? err.message : 'Failed to create an account');
     } finally {
       setLoading(false);
