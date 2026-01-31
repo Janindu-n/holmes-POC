@@ -1,0 +1,3 @@
+## 2025-01-31 - [Server Component Conversion & State Isolation]
+**Learning:** Large landing pages in Next.js (App Router) can be significantly optimized by converting them into Server Components. Interactive logic like scroll-based parallax effects should be isolated into dedicated Client Components at the leaf level. This reduces the client-side JavaScript bundle and improves hydration performance for the static parts of the page. Additionally, always use `{ passive: true }` for scroll listeners to avoid blocking the main thread.
+**Action:** Identify large Client Components that only use hooks for a small portion of their UI, and extract that logic into sub-components to allow the parent to become a Server Component.
