@@ -10,7 +10,10 @@ import { auth, db } from '@/lib/firebase';
 function RegisterForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const role = searchParams.get('role') || 'client';
+
+  // ✅ Sentinel: Validate role against an allowlist to prevent privilege escalation
+  const rawRole = searchParams.get('role');
+  const role = (rawRole === 'client' || rawRole === 'specialist') ? rawRole : 'client';
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -23,6 +26,19 @@ function RegisterForm() {
     setLoading(true);
     setError('');
 
+    // ✅ Sentinel: Basic input validation
+    if (name.trim().length < 2) {
+      setError('Name must be at least 2 characters long');
+      setLoading(false);
+      return;
+    }
+
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters long');
+      setLoading(false);
+      return;
+    }
+
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       await updateProfile(userCredential.user, { displayName: name });
@@ -30,7 +46,7 @@ function RegisterForm() {
       // Save user role and profile to Firestore
       await setDoc(doc(db, 'users', userCredential.user.uid), {
         uid: userCredential.user.uid,
-        name,
+        name: name.trim(),
         email,
         role,
         createdAt: new Date().toISOString(),
@@ -38,7 +54,18 @@ function RegisterForm() {
 
       router.push('/dashboard');
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Failed to create an account');
+      // ✅ Sentinel: Sanitize error messages to prevent information leakage
+      const error = err as { code?: string; message?: string };
+      if (error.code === 'auth/email-already-in-use') {
+        setError('This email is already in use. Please try another one.');
+      } else if (error.code === 'auth/weak-password') {
+        setError('The password is too weak.');
+      } else if (error.code === 'auth/invalid-email') {
+        setError('The email address is invalid.');
+      } else {
+        setError('Failed to create an account. Please try again later.');
+      }
+      console.error('Registration error:', err);
     } finally {
       setLoading(false);
     }
@@ -68,6 +95,8 @@ function RegisterForm() {
               <input
                 type="text"
                 required
+                minLength={2}
+                maxLength={100}
                 className="w-full px-4 py-2 rounded-lg border border-stone-300 dark:border-stone-600 dark:bg-stone-800 focus:ring-2 focus:ring-primary focus:border-primary transition-all outline-none"
                 placeholder="John Doe"
                 value={name}
@@ -94,6 +123,8 @@ function RegisterForm() {
               <input
                 type="password"
                 required
+                minLength={6}
+                maxLength={128}
                 className="w-full px-4 py-2 rounded-lg border border-stone-300 dark:border-stone-600 dark:bg-stone-800 focus:ring-2 focus:ring-primary focus:border-primary transition-all outline-none"
                 placeholder="••••••••"
                 value={password}
