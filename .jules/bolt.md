@@ -1,0 +1,3 @@
+## 2025-05-15 - [Parallax Scroll Optimization]
+**Learning:** High-frequency state updates (like window scroll tracking for parallax) trigger re-renders for the entire component tree below where the state is defined. In large landing pages, this can cause significant performance degradation and laggy scrolling.
+**Action:** Isolate high-frequency interaction logic into dedicated, small leaf Client Components. Pass static content as children to these components so that they don't re-render when the wrapper's state changes. Convert the main page to a Server Component whenever possible to further reduce client-side overhead. Always use `{ passive: true }` for scroll listeners.
