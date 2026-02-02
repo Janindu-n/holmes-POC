@@ -10,7 +10,8 @@ import { auth, db } from '@/lib/firebase';
 function RegisterForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const role = searchParams.get('role') || 'client';
+  const rawRole = searchParams.get('role');
+  const role = (rawRole === 'client' || rawRole === 'specialist') ? rawRole : 'client';
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -20,6 +21,24 @@ function RegisterForm() {
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Security Enhancement: Validate auth/db initialization
+    if (!auth || !db) {
+      setError('System configuration error: Firebase not initialized. Please check environment variables.');
+      return;
+    }
+
+    // Input Validation
+    if (name.trim().length < 2) {
+      setError('Full Name must be at least 2 characters long');
+      return;
+    }
+
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters long');
+      return;
+    }
+
     setLoading(true);
     setError('');
 
@@ -30,7 +49,7 @@ function RegisterForm() {
       // Save user role and profile to Firestore
       await setDoc(doc(db, 'users', userCredential.user.uid), {
         uid: userCredential.user.uid,
-        name,
+        name: name.trim(),
         email,
         role,
         createdAt: new Date().toISOString(),
@@ -38,7 +57,20 @@ function RegisterForm() {
 
       router.push('/dashboard');
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Failed to create an account');
+      // Security Enhancement: Sanitize error messages
+      let message = 'Failed to create an account';
+      if (err instanceof Error) {
+        if (err.message.includes('email-already-in-use')) {
+          message = 'This email is already registered';
+        } else if (err.message.includes('invalid-email')) {
+          message = 'Please provide a valid email address';
+        } else if (err.message.includes('weak-password')) {
+          message = 'The password provided is too weak';
+        } else if (err.message.includes('operation-not-allowed')) {
+          message = 'Email/password registration is not enabled';
+        }
+      }
+      setError(message);
     } finally {
       setLoading(false);
     }
