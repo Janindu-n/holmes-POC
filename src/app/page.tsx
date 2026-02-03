@@ -1,22 +1,9 @@
-'use client';
-
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
+import HeroParallax from '@/components/HeroParallax';
 
 export default function Home() {
-  const [scrollY, setScrollY] = useState(0);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrollY(window.scrollY);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  const opacity = Math.max(1 - scrollY / 400, 0);
-  const translateY = scrollY / 3;
-
   return (
     <div className="bg-background-light dark:bg-background-dark text-stone-900 dark:text-white font-display min-h-screen">
       {/* Header */}
@@ -48,13 +35,7 @@ export default function Home() {
       <section className="relative overflow-hidden bg-background-light dark:bg-background-dark pt-16 pb-20 lg:pt-24 lg:pb-28">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-8 items-center">
-            <div
-              className="flex flex-col gap-6 text-left max-w-2xl transition-all duration-75"
-              style={{
-                opacity: opacity,
-                transform: `translateY(${translateY}px)`
-              }}
-            >
+            <HeroParallax className="flex flex-col gap-6 text-left max-w-2xl transition-all duration-75">
               <div className="inline-flex w-fit items-center gap-2 rounded-full border border-orange-200 bg-orange-50 px-3 py-1 text-xs font-semibold text-orange-800 dark:border-orange-900 dark:bg-orange-900/30 dark:text-orange-300">
                 <span className="relative flex h-2 w-2">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
@@ -81,13 +62,31 @@ export default function Home() {
               </div>
               <div className="mt-6 flex items-center gap-4 text-sm font-medium text-stone-500 dark:text-stone-500">
                 <div className="flex -space-x-2 overflow-hidden">
-                  <img alt="User avatar" className="inline-block h-8 w-8 rounded-full ring-2 ring-white dark:ring-background-dark" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDrt9yYXivDBlPnWe1CnnximQpeX9_gmPGHfbCSpZE3WnwygfHP3zswm8S22tAangG_oYzGYSrC70Yapu28xcBu8qYKtJlG2eFRtTUKzdi8oS824aD8bFUskFgHU88eyVeZ-AkLW8KaCZCp2SBm5-1WjLb_vzracB91IevIjeX5IJjj_IQA28b_yEYROqBEbk6I6dntIgsPSw5rbpEwvKl3b1PRSNJ5WQNXzv6o-ccMfnGjJJtRgoMh1Fc7LskPTeWjA8nJfa_llkF3"/>
-                  <img alt="User avatar" className="inline-block h-8 w-8 rounded-full ring-2 ring-white dark:ring-background-dark" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBGbCaDz0G2OAuYEH9krDXOcEiKqNpU5kyZn0NEis0kGJ8RfpQNRUK4QaZAv0M7CU3xhcV_g52vFCsGrIYdFOQC7ac2niPePzu4CvI-JJVvZsgEyCTy5iIhnpOezI-E2PsNyuDd42fzmo1TafpoMmJGZZKS7Qh_MSMGYKDQeBgX8_Wn4mGNPcOJTBuWSnR9ofPcW6d6lSwb4wMVRfRof93wEJl_YV5t106E8SQYtv8p-Zyepgo_5cjwPq22SNLSnibVpdpt9nJGRZPk"/>
-                  <img alt="User avatar" className="inline-block h-8 w-8 rounded-full ring-2 ring-white dark:ring-background-dark" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC_2ZyKS3GLe1PxowifBFBGUHjlsfNDoQ6ZyVoYR789da-7TBYb1yxigLP0p-aTCoplasmGi_pPXA9X5gV_4qaYYI4WP8WSDv-pUiUNg31Wu-ATLasTqgbiXaQEukE4JrdFk1CWHuVG969xEurNRjwmu4dgKuaQtERdc6k6hOmTGjfMd_DVutZ218cY8cAYnSCNKiQiPXi9jCHTKS1mHJ0R3imjn88QNtkP2QhVt-mblu8GG8ytKXlamQVa2Zb08pADs8ilK_qrIOYR"/>
+                  <Image
+                    alt="User avatar"
+                    className="inline-block h-8 w-8 rounded-full ring-2 ring-white dark:ring-background-dark"
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuDrt9yYXivDBlPnWe1CnnximQpeX9_gmPGHfbCSpZE3WnwygfHP3zswm8S22tAangG_oYzGYSrC70Yapu28xcBu8qYKtJlG2eFRtTUKzdi8oS824aD8bFUskFgHU88eyVeZ-AkLW8KaCZCp2SBm5-1WjLb_vzracB91IevIjeX5IJjj_IQA28b_yEYROqBEbk6I6dntIgsPSw5rbpEwvKl3b1PRSNJ5WQNXzv6o-ccMfnGjJJtRgoMh1Fc7LskPTeWjA8nJfa_llkF3"
+                    width={32}
+                    height={32}
+                  />
+                  <Image
+                    alt="User avatar"
+                    className="inline-block h-8 w-8 rounded-full ring-2 ring-white dark:ring-background-dark"
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuBGbCaDz0G2OAuYEH9krDXOcEiKqNpU5kyZn0NEis0kGJ8RfpQNRUK4QaZAv0M7CU3xhcV_g52vFCsGrIYdFOQC7ac2niPePzu4CvI-JJVvZsgEyCTy5iIhnpOezI-E2PsNyuDd42fzmo1TafpoMmJGZZKS7Qh_MSMGYKDQeBgX8_Wn4mGNPcOJTBuWSnR9ofPcW6d6lSwb4wMVRfRof93wEJl_YV5t106E8SQYtv8p-Zyepgo_5cjwPq22SNLSnibVpdpt9nJGRZPk"
+                    width={32}
+                    height={32}
+                  />
+                  <Image
+                    alt="User avatar"
+                    className="inline-block h-8 w-8 rounded-full ring-2 ring-white dark:ring-background-dark"
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuC_2ZyKS3GLe1PxowifBFBGUHjlsfNDoQ6ZyVoYR789da-7TBYb1yxigLP0p-aTCoplasmGi_pPXA9X5gV_4qaYYI4WP8WSDv-pUiUNg31Wu-ATLasTqgbiXaQEukE4JrdFk1CWHuVG969xEurNRjwmu4dgKuaQtERdc6k6hOmTGjfMd_DVutZ218cY8cAYnSCNKiQiPXi9jCHTKS1mHJ0R3imjn88QNtkP2QhVt-mblu8GG8ytKXlamQVa2Zb08pADs8ilK_qrIOYR"
+                    width={32}
+                    height={32}
+                  />
                 </div>
                 <p>Trusted by 500+ homeowners</p>
               </div>
-            </div>
+            </HeroParallax>
             <div className="relative lg:h-auto h-[400px] w-full rounded-2xl overflow-hidden shadow-2xl">
               <div className="absolute inset-0 bg-gradient-to-t from-stone-900/60 via-transparent to-transparent z-10"></div>
               <div className="absolute bottom-6 left-6 right-6 z-20 text-white">
@@ -97,7 +96,13 @@ export default function Home() {
                 </div>
                 <p className="text-sm opacity-90">Live Feed • Living Room Cam 01</p>
               </div>
-              <div className="w-full h-full bg-cover bg-center" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuAhqwGi8qZnZJogTGOJhYA_q8LMWQ3U5KTHBOQrqDWGqfr0RKCAKqhs1l7DboBNoFaf8JDCVP2YADK-y5_I0uf4-uw5yIs79ztpnj2P7rbk3ejhw8KeIQPDlORl0vKjQEV3GFiEvqu69AnJCdyKB1tOps-OD302PJKeua8rZVyawkwMaTd710XDLKCT_-jlBwLRuJFW5LeWD_a1U-vk9PVGnzbuyT-vRIIV_l-_lem6KDCOpd0alpx9xg2GhooSk9RNq1qTVlPR719X')" }}></div>
+              <Image
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuAhqwGi8qZnZJogTGOJhYA_q8LMWQ3U5KTHBOQrqDWGqfr0RKCAKqhs1l7DboBNoFaf8JDCVP2YADK-y5_I0uf4-uw5yIs79ztpnj2P7rbk3ejhw8KeIQPDlORl0vKjQEV3GFiEvqu69AnJCdyKB1tOps-OD302PJKeua8rZVyawkwMaTd710XDLKCT_-jlBwLRuJFW5LeWD_a1U-vk9PVGnzbuyT-vRIIV_l-_lem6KDCOpd0alpx9xg2GhooSk9RNq1qTVlPR719X"
+                alt="Living Room Live Feed"
+                fill
+                className="object-cover"
+                priority
+              />
             </div>
           </div>
         </div>
@@ -170,12 +175,40 @@ export default function Home() {
             <div className="order-2 lg:order-1">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-4">
-                  <div className="w-full aspect-[3/4] rounded-2xl bg-cover bg-center shadow-lg" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuBBCBsjDW83osSTXyE4F3GDRIphisU5xVkNgv6AN3Z9CThkBwBB4_0JuDDKHZoU4ZutqwWwhsu4BNXym-hSH66Lx2i-kGXlpBJwfc64Y-0E2ZNHzTPjrKopOneeXhAsgrdUUt0_ZfX1Qga01zMln6SnYNyKaDRQPqMvDXEqOtPQlheaTEGcMaRANo1u9FG5aArlJ8uLmCp4fzjcGTvEx8yDAVF9ZJmO9WQ7YIZEHYYBjCV8f-7_GL1pRkuImbfTiUUiXAQ-KIHm3lGD')" }}></div>
-                  <div className="w-full aspect-square rounded-2xl bg-cover bg-center shadow-lg" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuDLnsJ25r8niw5gZpo01T4kCCGQpw_QjLc3DNqZ3jVoqpVto6aJwSJ1njVmyFRY4lKpCxlORy7gBBk4Q_OhqkGAMkCIu56QwPVDAfE5p2JRDcc84s3bvoL1n5ECJB-OYPdPRy5j7bEGi1OoduxVPAGLfDcuzSMnT-mfNmU2rZgqkA4tc_MFhZshcFzynEcNWgH-7ZE2RC-Wepm90oSyPALI-UKOsZuNyE6mMNdE51qPIhT7LQLPYQWQCQN3JZGDyjTZLuDulE1LAxuG')" }}></div>
+                  <div className="w-full aspect-[3/4] rounded-2xl relative overflow-hidden shadow-lg">
+                    <Image
+                      src="https://lh3.googleusercontent.com/aida-public/AB6AXuBBCBsjDW83osSTXyE4F3GDRIphisU5xVkNgv6AN3Z9CThkBwBB4_0JuDDKHZoU4ZutqwWwhsu4BNXym-hSH66Lx2i-kGXlpBJwfc64Y-0E2ZNHzTPjrKopOneeXhAsgrdUUt0_ZfX1Qga01zMln6SnYNyKaDRQPqMvDXEqOtPQlheaTEGcMaRANo1u9FG5aArlJ8uLmCp4fzjcGTvEx8yDAVF9ZJmO9WQ7YIZEHYYBjCV8f-7_GL1pRkuImbfTiUUiXAQ-KIHm3lGD"
+                      alt="Property Maintenance"
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                  <div className="w-full aspect-square rounded-2xl relative overflow-hidden shadow-lg">
+                    <Image
+                      src="https://lh3.googleusercontent.com/aida-public/AB6AXuDLnsJ25r8niw5gZpo01T4kCCGQpw_QjLc3DNqZ3jVoqpVto6aJwSJ1njVmyFRY4lKpCxlORy7gBBk4Q_OhqkGAMkCIu56QwPVDAfE5p2JRDcc84s3bvoL1n5ECJB-OYPdPRy5j7bEGi1OoduxVPAGLfDcuzSMnT-mfNmU2rZgqkA4tc_MFhZshcFzynEcNWgH-7ZE2RC-Wepm90oSyPALI-UKOsZuNyE6mMNdE51qPIhT7LQLPYQWQCQN3JZGDyjTZLuDulE1LAxuG"
+                      alt="Home Security"
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
                 </div>
                 <div className="space-y-4 pt-12">
-                  <div className="w-full aspect-square rounded-2xl bg-cover bg-center shadow-lg" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuAe09Tw9NWs7XB-N10l7nOfjNQRngl_QWas5gSks-WnI-NjE4E64CER8iSRamfzLO5DlttlikbNWJMBBMQEey1nsDP2aFJPAXYJiBVFMR4NCRVL8AGWGeZU3Ma3Ol9JfzsihXi_-3u-XifkYCS5lBhkJhFqrpUPJjnkmgNn1xupCLA0nBdufU6nZqRytvoh6KIX-XMM8xErFJHEeQ3pXIs4ubRIsHtColI0xHRmgEzeM3qzkXUQ3qZiar9B8JCgeb8dB57ctHVOiZeA')" }}></div>
-                  <div className="w-full aspect-[3/4] rounded-2xl bg-cover bg-center shadow-lg" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuDAzR2VvHq0ALOSYjWneSGW5VFLhRP3Y6_Qh497dhPEdY93SCs3rLog2E_J1aDkE7Jco-PlaIjTtJs9B5SGYVNcHaDiuCVT_MtN9IZ61bnqCZBEuT79S-G9tnk9pqQ8aziw1egoeYuvcdxY2APuFJuDMs1CSB0Zkr35HZARVQz797zOhDHKPZkrcOE1Xq0aRFENspeVe3pNLB_24CbKK0JeZtripyE5eJQf0wxY97F0Z-JRkzD3vm4XbuIvWNrdpNGhtKXPSAqHPYyr')" }}></div>
+                  <div className="w-full aspect-square rounded-2xl relative overflow-hidden shadow-lg">
+                    <Image
+                      src="https://lh3.googleusercontent.com/aida-public/AB6AXuAe09Tw9NWs7XB-N10l7nOfjNQRngl_QWas5gSks-WnI-NjE4E64CER8iSRamfzLO5DlttlikbNWJMBBMQEey1nsDP2aFJPAXYJiBVFMR4NCRVL8AGWGeZU3Ma3Ol9JfzsihXi_-3u-XifkYCS5lBhkJhFqrpUPJjnkmgNn1xupCLA0nBdufU6nZqRytvoh6KIX-XMM8xErFJHEeQ3pXIs4ubRIsHtColI0xHRmgEzeM3qzkXUQ3qZiar9B8JCgeb8dB57ctHVOiZeA"
+                      alt="Vetted Professional"
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                  <div className="w-full aspect-[3/4] rounded-2xl relative overflow-hidden shadow-lg">
+                    <Image
+                      src="https://lh3.googleusercontent.com/aida-public/AB6AXuDAzR2VvHq0ALOSYjWneSGW5VFLhRP3Y6_Qh497dhPEdY93SCs3rLog2E_J1aDkE7Jco-PlaIjTtJs9B5SGYVNcHaDiuCVT_MtN9IZ61bnqCZBEuT79S-G9tnk9pqQ8aziw1egoeYuvcdxY2APuFJuDMs1CSB0Zkr35HZARVQz797zOhDHKPZkrcOE1Xq0aRFENspeVe3pNLB_24CbKK0JeZtripyE5eJQf0wxY97F0Z-JRkzD3vm4XbuIvWNrdpNGhtKXPSAqHPYyr"
+                      alt="Property Care"
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
@@ -231,8 +264,13 @@ export default function Home() {
             &quot;Living in Melbourne while maintaining a home in Colombo used to be stressful. Holmes Homes changed everything. The verified specialists and live video updates give me absolute peace of mind.&quot;
           </h2>
           <div className="mt-8 flex flex-col items-center justify-center gap-2">
-            <div className="size-12 overflow-hidden rounded-full bg-stone-200">
-              <img alt="Customer Avatar" className="h-full w-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuASsRqylbw-D4F7Rqt0AMKPTIBRASKQ0J9o24VlmGnMYE7MOP7ibHKmGIpgJjt7TX70Pqxu0A_MvHAskLl5MtveI5whEhbgJVfAFLHam-qx1Dh4wP_jn-xxqI-7yjPV5ih8VG355rR69CQqWtaIHhZIKg1sdXETfI49qE2iKbk-8XVzkYcXUrPyVqkrc943kSompL9J1rroSmCioTVNKs7QMzRUqGKb3WM3v_0Av64H3_X1jp7Vb0WGRlUoDRkPZxw-Khjiiii0gApF"/>
+            <div className="size-12 overflow-hidden rounded-full bg-stone-200 relative">
+              <Image
+                alt="Customer Avatar"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuASsRqylbw-D4F7Rqt0AMKPTIBRASKQ0J9o24VlmGnMYE7MOP7ibHKmGIpgJjt7TX70Pqxu0A_MvHAskLl5MtveI5whEhbgJVfAFLHam-qx1Dh4wP_jn-xxqI-7yjPV5ih8VG355rR69CQqWtaIHhZIKg1sdXETfI49qE2iKbk-8XVzkYcXUrPyVqkrc943kSompL9J1rroSmCioTVNKs7QMzRUqGKb3WM3v_0Av64H3_X1jp7Vb0WGRlUoDRkPZxw-Khjiiii0gApF"
+                fill
+                className="object-cover"
+              />
             </div>
             <div className="text-base font-semibold text-stone-900 dark:text-white">Aruni P.</div>
             <div className="text-sm text-stone-500">Property Owner, Melbourne</div>
@@ -309,7 +347,7 @@ export default function Home() {
               <a className="hover:text-primary transition-colors" href="#">
                 <span className="sr-only">Twitter</span>
                 <svg className="size-5" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84"></path>
+                  <path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.095 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84"></path>
                 </svg>
               </a>
               <a className="hover:text-primary transition-colors" href="#">
