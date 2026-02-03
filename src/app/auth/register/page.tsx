@@ -23,6 +23,34 @@ function RegisterForm() {
     setLoading(true);
     setError('');
 
+    // Security check: Verify Firebase configuration is valid
+    if (!auth || !db) {
+      setError('System is temporarily unavailable. Please try again later.');
+      setLoading(false);
+      return;
+    }
+
+    // Security check: Validate role against allowlist
+    const allowedRoles = ['client', 'specialist'];
+    if (!allowedRoles.includes(role)) {
+      setError('Invalid role selected. Please return to onboarding.');
+      setLoading(false);
+      return;
+    }
+
+    // Input validation: Enforce minimum lengths
+    if (name.trim().length < 2) {
+      setError('Name must be at least 2 characters long.');
+      setLoading(false);
+      return;
+    }
+
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters long.');
+      setLoading(false);
+      return;
+    }
+
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       await updateProfile(userCredential.user, { displayName: name });
@@ -38,7 +66,15 @@ function RegisterForm() {
 
       router.push('/dashboard');
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Failed to create an account');
+      // Security: Use generic error messages to avoid information leakage
+      // We log a generic message to the console to avoid exposing sensitive details in production
+      console.error('Registration failed');
+
+      if (err instanceof Error && err.message.includes('email-already-in-use')) {
+        setError('This email is already registered.');
+      } else {
+        setError('Failed to create an account. Please try again later.');
+      }
     } finally {
       setLoading(false);
     }

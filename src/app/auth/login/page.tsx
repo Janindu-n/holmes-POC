@@ -18,10 +18,19 @@ export default function Login() {
     setLoading(true);
     setError('');
 
+    // Security check: Verify Firebase configuration is valid
+    if (!auth) {
+      setError('System is temporarily unavailable. Please try again later.');
+      setLoading(false);
+      return;
+    }
+
     try {
       await signInWithEmailAndPassword(auth, email, password);
       router.push('/dashboard');
     } catch {
+      // Security: Use a generic error message and log a generic error internally to avoid leakage
+      console.error('Login failed');
       setError('Invalid email or password');
     } finally {
       setLoading(false);
