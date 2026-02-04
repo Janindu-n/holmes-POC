@@ -15,6 +15,13 @@ export default function Login() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Security: Fail-secure check for Firebase initialization
+    if (!auth) {
+      setError('Authentication service is unavailable. Please try again later.');
+      return;
+    }
+
     setLoading(true);
     setError('');
 
@@ -22,6 +29,7 @@ export default function Login() {
       await signInWithEmailAndPassword(auth, email, password);
       router.push('/dashboard');
     } catch {
+      // Security: Keep error messages generic to prevent account enumeration
       setError('Invalid email or password');
     } finally {
       setLoading(false);
