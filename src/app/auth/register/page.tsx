@@ -10,7 +10,10 @@ import { auth, db } from '@/lib/firebase';
 function RegisterForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const role = searchParams.get('role') || 'client';
+
+  // Security: Validate role against allowlist to prevent privilege escalation
+  const rawRole = searchParams.get('role');
+  const role = (rawRole === 'client' || rawRole === 'specialist') ? rawRole : 'client';
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -20,6 +23,24 @@ function RegisterForm() {
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Security: Fail-secure check for Firebase initialization
+    if (!auth || !db) {
+      setError('Authentication service is unavailable. Please try again later.');
+      return;
+    }
+
+    // Security: Input validation before submission
+    if (name.trim().length < 2) {
+      setError('Name must be at least 2 characters long');
+      return;
+    }
+
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters long');
+      return;
+    }
+
     setLoading(true);
     setError('');
 
@@ -30,7 +51,7 @@ function RegisterForm() {
       // Save user role and profile to Firestore
       await setDoc(doc(db, 'users', userCredential.user.uid), {
         uid: userCredential.user.uid,
-        name,
+        name: name.trim(),
         email,
         role,
         createdAt: new Date().toISOString(),
@@ -38,7 +59,18 @@ function RegisterForm() {
 
       router.push('/dashboard');
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Failed to create an account');
+      // Security: Sanitize error messages using error codes to prevent information leakage
+      const errorCode = (err as { code?: string }).code;
+
+      if (errorCode === 'auth/email-already-in-use') {
+        setError('This email is already registered. Please sign in instead.');
+      } else if (errorCode === 'auth/invalid-email') {
+        setError('Please enter a valid email address.');
+      } else if (errorCode === 'auth/weak-password') {
+        setError('The password is too weak.');
+      } else {
+        setError('Failed to create an account. Please check your details and try again.');
+      }
     } finally {
       setLoading(false);
     }
