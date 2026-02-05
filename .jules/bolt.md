@@ -1,0 +1,3 @@
+## 2025-05-23 - [Scroll Parallax Optimization]
+**Learning:** Attaching a scroll listener to a top-level page component in React causes the entire page to re-render on every scroll event. This leads to massive CPU overhead and potential jank as the Virtual DOM tree for the entire page is reconciled multiple times per frame.
+**Action:** Isolate scroll-based state and its associated components into smaller, dedicated sub-components. This confines re-renders to only the elements that actually change, keeping the rest of the page static and significantly improving Time to Interactive (TTI) and scroll smoothness. Always use `{ passive: true }` for scroll listeners to ensure they don't block the browser's main thread.
