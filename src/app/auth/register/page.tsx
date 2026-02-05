@@ -10,7 +10,10 @@ import { auth, db } from '@/lib/firebase';
 function RegisterForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const role = searchParams.get('role') || 'client';
+
+  // Validate role against allowlist
+  const rawRole = searchParams.get('role');
+  const role = (rawRole === 'client' || rawRole === 'specialist') ? rawRole : 'client';
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -22,6 +25,26 @@ function RegisterForm() {
     e.preventDefault();
     setLoading(true);
     setError('');
+
+    // Runtime check for Firebase initialization
+    if (!auth || !db) {
+      setError('System configuration error. Please try again later.');
+      setLoading(false);
+      return;
+    }
+
+    // Client-side validation
+    if (name.trim().length < 2) {
+      setError('Name must be at least 2 characters long');
+      setLoading(false);
+      return;
+    }
+
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters long');
+      setLoading(false);
+      return;
+    }
 
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
@@ -38,7 +61,21 @@ function RegisterForm() {
 
       router.push('/dashboard');
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Failed to create an account');
+      const errorWithCode = err as { code?: string };
+      // Sanitize Firebase error messages to prevent leaking internals
+      switch (errorWithCode.code) {
+        case 'auth/email-already-in-use':
+          setError('This email is already registered.');
+          break;
+        case 'auth/invalid-email':
+          setError('Invalid email address.');
+          break;
+        case 'auth/weak-password':
+          setError('The password is too weak.');
+          break;
+        default:
+          setError('Failed to create an account. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
