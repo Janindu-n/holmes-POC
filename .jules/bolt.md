@@ -1,0 +1,3 @@
+## 2026-02-06 - Isolating High-Frequency Events
+**Learning:** Attaching a scroll listener to a large top-level component (like a landing page) causes the entire component and its children to re-render on every scroll event. This can lead to significant jank and high CPU usage even if the state change only affects a small part of the UI.
+**Action:** Move high-frequency interactive logic (scroll parallax, mouse tracking, etc.) into dedicated, small leaf Client Components. This isolates the re-renders to only the elements that need them and allows the parent component to be a Server Component, reducing the client-side JavaScript bundle.
