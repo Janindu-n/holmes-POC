@@ -10,7 +10,8 @@ import { auth, db } from '@/lib/firebase';
 function RegisterForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const role = searchParams.get('role') || 'client';
+  const rawRole = searchParams.get('role');
+  const role = (rawRole === 'client' || rawRole === 'specialist') ? rawRole : 'client';
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -20,6 +21,22 @@ function RegisterForm() {
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!auth || !db) {
+      setError('Authentication system is not properly configured.');
+      return;
+    }
+
+    if (name.length < 2) {
+      setError('Name must be at least 2 characters long.');
+      return;
+    }
+
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters long.');
+      return;
+    }
+
     setLoading(true);
     setError('');
 
@@ -38,7 +55,18 @@ function RegisterForm() {
 
       router.push('/dashboard');
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Failed to create an account');
+      let message = 'Failed to create an account';
+      if (err && typeof err === 'object' && 'code' in err) {
+        const firebaseError = err as { code: string };
+        if (firebaseError.code === 'auth/email-already-in-use') {
+          message = 'This email is already registered.';
+        } else if (firebaseError.code === 'auth/invalid-email') {
+          message = 'Invalid email address.';
+        } else if (firebaseError.code === 'auth/weak-password') {
+          message = 'Password is too weak.';
+        }
+      }
+      setError(message);
     } finally {
       setLoading(false);
     }
