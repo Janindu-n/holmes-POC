@@ -18,6 +18,13 @@ export default function Login() {
     setLoading(true);
     setError('');
 
+    // Security: Guard against uninitialized Firebase services
+    if (!auth) {
+      setError('Authentication service is currently unavailable. Please try again later.');
+      setLoading(false);
+      return;
+    }
+
     try {
       await signInWithEmailAndPassword(auth, email, password);
       router.push('/dashboard');

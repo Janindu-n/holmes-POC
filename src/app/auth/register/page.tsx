@@ -23,6 +23,33 @@ function RegisterForm() {
     setLoading(true);
     setError('');
 
+    // Security: Validate role against allowlist to prevent privilege escalation
+    const allowedRoles = ['client', 'specialist'];
+    if (!allowedRoles.includes(role)) {
+      setError('Invalid role selected');
+      setLoading(false);
+      return;
+    }
+
+    // Security: Enforce minimum input lengths
+    if (name.trim().length < 2) {
+      setError('Name must be at least 2 characters long');
+      setLoading(false);
+      return;
+    }
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters long');
+      setLoading(false);
+      return;
+    }
+
+    // Security: Guard against uninitialized Firebase services
+    if (!auth || !db) {
+      setError('Authentication service is currently unavailable. Please try again later.');
+      setLoading(false);
+      return;
+    }
+
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       await updateProfile(userCredential.user, { displayName: name });
@@ -30,7 +57,7 @@ function RegisterForm() {
       // Save user role and profile to Firestore
       await setDoc(doc(db, 'users', userCredential.user.uid), {
         uid: userCredential.user.uid,
-        name,
+        name: name.trim(),
         email,
         role,
         createdAt: new Date().toISOString(),
@@ -38,7 +65,24 @@ function RegisterForm() {
 
       router.push('/dashboard');
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Failed to create an account');
+      // Security: Sanitize error messages to prevent implementation detail leakage
+      if (err && typeof err === 'object' && 'code' in err) {
+        switch (err.code) {
+          case 'auth/email-already-in-use':
+            setError('This email is already in use.');
+            break;
+          case 'auth/invalid-email':
+            setError('Invalid email address.');
+            break;
+          case 'auth/weak-password':
+            setError('The password is too weak.');
+            break;
+          default:
+            setError('Failed to create account. Please try again.');
+        }
+      } else {
+        setError('An unexpected error occurred. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
