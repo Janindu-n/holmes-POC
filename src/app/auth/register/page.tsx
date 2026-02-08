@@ -7,6 +7,8 @@ import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
 
+const ALLOWED_ROLES = ['client', 'specialist'];
+
 function RegisterForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -23,6 +25,33 @@ function RegisterForm() {
     setLoading(true);
     setError('');
 
+    // Initialization guards
+    if (!auth || !db) {
+      setError('System is not properly configured. Please try again later.');
+      setLoading(false);
+      return;
+    }
+
+    // Input validation
+    if (name.trim().length < 2) {
+      setError('Name must be at least 2 characters long');
+      setLoading(false);
+      return;
+    }
+
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters long');
+      setLoading(false);
+      return;
+    }
+
+    // Role validation (Defense against manual query param manipulation)
+    if (!ALLOWED_ROLES.includes(role)) {
+      setError('Invalid account type requested');
+      setLoading(false);
+      return;
+    }
+
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       await updateProfile(userCredential.user, { displayName: name });
@@ -38,7 +67,24 @@ function RegisterForm() {
 
       router.push('/dashboard');
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Failed to create an account');
+      // Sanitize Firebase error messages
+      let message = 'Failed to create an account';
+      if (err && typeof err === 'object' && 'code' in err) {
+        switch (err.code) {
+          case 'auth/email-already-in-use':
+            message = 'This email is already registered';
+            break;
+          case 'auth/invalid-email':
+            message = 'Please provide a valid email address';
+            break;
+          case 'auth/weak-password':
+            message = 'The password is too weak';
+            break;
+          default:
+            message = 'An error occurred during registration. Please try again.';
+        }
+      }
+      setError(message);
     } finally {
       setLoading(false);
     }
