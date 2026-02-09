@@ -10,7 +10,9 @@ import { auth, db } from '@/lib/firebase';
 function RegisterForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const role = searchParams.get('role') || 'client';
+  const rawRole = searchParams.get('role');
+  // Security: Only allow specific roles
+  const role = (rawRole === 'client' || rawRole === 'specialist') ? rawRole : 'client';
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -20,6 +22,24 @@ function RegisterForm() {
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Security: Guard against null Firebase instances
+    if (!auth || !db) {
+      setError('Registration is temporarily unavailable. Please try again later.');
+      return;
+    }
+
+    // Security: Input length validation
+    if (name.trim().length < 2) {
+      setError('Name must be at least 2 characters long.');
+      return;
+    }
+
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters long.');
+      return;
+    }
+
     setLoading(true);
     setError('');
 
@@ -30,15 +50,35 @@ function RegisterForm() {
       // Save user role and profile to Firestore
       await setDoc(doc(db, 'users', userCredential.user.uid), {
         uid: userCredential.user.uid,
-        name,
-        email,
+        name: name.trim(),
+        email: email.trim(),
         role,
         createdAt: new Date().toISOString(),
       });
 
       router.push('/dashboard');
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Failed to create an account');
+      // Security: Sanitize error messages to prevent leaking internal details
+      if (err && typeof err === 'object' && 'code' in err) {
+        switch (err.code) {
+          case 'auth/email-already-in-use':
+            setError('This email is already registered.');
+            break;
+          case 'auth/invalid-email':
+            setError('The email address is invalid.');
+            break;
+          case 'auth/operation-not-allowed':
+            setError('Registration is currently disabled.');
+            break;
+          case 'auth/weak-password':
+            setError('The password is too weak.');
+            break;
+          default:
+            setError('Failed to create an account. Please try again.');
+        }
+      } else {
+        setError('An unexpected error occurred. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
