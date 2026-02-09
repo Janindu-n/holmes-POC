@@ -15,6 +15,13 @@ export default function Login() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Security: Guard against null Firebase instances
+    if (!auth) {
+      setError('Login is temporarily unavailable. Please try again later.');
+      return;
+    }
+
     setLoading(true);
     setError('');
 
@@ -22,6 +29,7 @@ export default function Login() {
       await signInWithEmailAndPassword(auth, email, password);
       router.push('/dashboard');
     } catch {
+      // Security: Generic error message to prevent account enumeration
       setError('Invalid email or password');
     } finally {
       setLoading(false);
