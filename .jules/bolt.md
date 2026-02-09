@@ -1,0 +1,3 @@
+## 2025-05-14 - Isolate scroll parallax and convert landing page to Server Component
+**Learning:** High-frequency events like 'scroll' can trigger expensive re-renders of entire pages if the state is kept at the top level. Using the "push state down" pattern by isolating these effects into leaf components significantly improves performance. Throttling with requestAnimationFrame and using passive listeners further optimizes the browser's main thread.
+**Action:** Always look for high-frequency state updates and isolate them into dedicated client components, allowing parent pages to remain as static Server Components where possible.
