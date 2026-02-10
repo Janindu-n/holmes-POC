@@ -1,0 +1,3 @@
+## 2026-02-10 - Isolating High-Frequency Events
+**Learning:** Attaching scroll event listeners to large page components causes the entire component and its children to re-render on every scroll event, leading to significant performance degradation and "scroll jank."
+**Action:** Move high-frequency interactive logic (like parallax or scroll-based visibility) into dedicated, small leaf Client Components. This allows React to only re-render the small component while the rest of the page (potentially Server Components) remains static. Always use `requestAnimationFrame` with a ticking flag and `{ passive: true }` for scroll listeners.
