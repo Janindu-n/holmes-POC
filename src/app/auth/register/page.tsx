@@ -10,7 +10,11 @@ import { auth, db } from '@/lib/firebase';
 function RegisterForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const role = searchParams.get('role') || 'client';
+
+  // Validate role against allowlist
+  const allowedRoles = ['client', 'specialist'];
+  const queryRole = searchParams.get('role');
+  const role = queryRole && allowedRoles.includes(queryRole) ? queryRole : 'client';
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -22,6 +26,26 @@ function RegisterForm() {
     e.preventDefault();
     setLoading(true);
     setError('');
+
+    // Input validation
+    if (name.trim().length < 2) {
+      setError('Name must be at least 2 characters long');
+      setLoading(false);
+      return;
+    }
+
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters long');
+      setLoading(false);
+      return;
+    }
+
+    // Initialization guards
+    if (!auth || !db) {
+      setError('Authentication service is not available. Please try again later.');
+      setLoading(false);
+      return;
+    }
 
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
@@ -38,7 +62,25 @@ function RegisterForm() {
 
       router.push('/dashboard');
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Failed to create an account');
+      // Map Firebase error codes to user-friendly messages
+      if (err && typeof err === 'object' && 'code' in err) {
+        const firebaseErr = err as { code: string };
+        switch (firebaseErr.code) {
+          case 'auth/email-already-in-use':
+            setError('This email is already in use. Please try logging in instead.');
+            break;
+          case 'auth/weak-password':
+            setError('The password is too weak. Please use a stronger password.');
+            break;
+          case 'auth/invalid-email':
+            setError('The email address is invalid. Please check and try again.');
+            break;
+          default:
+            setError('Failed to create an account. Please try again.');
+        }
+      } else {
+        setError('An unexpected error occurred. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
