@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { auth } from '@/lib/firebase';
@@ -46,6 +46,21 @@ const STATUS_ICONS: Record<JobStatus, string> = {
 export default function Dashboard() {
   const router = useRouter();
   const [job] = useState<Job>(MOCK_JOB);
+
+  useEffect(() => {
+    if (!auth) {
+      router.push('/auth/login');
+      return;
+    }
+
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (!user) {
+        router.push('/auth/login');
+      }
+    });
+
+    return () => unsubscribe();
+  }, [router]);
 
   const handleLogout = async () => {
     try {
