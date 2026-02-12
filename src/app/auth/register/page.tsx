@@ -7,10 +7,13 @@ import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
 
+const ALLOWED_ROLES = ['client', 'specialist'];
+
 function RegisterForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const role = searchParams.get('role') || 'client';
+  const roleParam = searchParams.get('role');
+  const role = roleParam && ALLOWED_ROLES.includes(roleParam) ? roleParam : 'client';
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -22,6 +25,26 @@ function RegisterForm() {
     e.preventDefault();
     setLoading(true);
     setError('');
+
+    // Input validation
+    if (name.length < 2) {
+      setError('Name must be at least 2 characters long');
+      setLoading(false);
+      return;
+    }
+
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters long');
+      setLoading(false);
+      return;
+    }
+
+    // Initialization guard
+    if (!auth || !db) {
+      setError('System initialization error. Please try again later.');
+      setLoading(false);
+      return;
+    }
 
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
@@ -38,7 +61,18 @@ function RegisterForm() {
 
       router.push('/dashboard');
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Failed to create an account');
+      let message = 'Failed to create an account. Please try again.';
+      if (err && typeof err === 'object' && 'code' in err) {
+        const code = (err as { code: string }).code;
+        if (code === 'auth/email-already-in-use') {
+          message = 'This email is already registered.';
+        } else if (code === 'auth/invalid-email') {
+          message = 'Please enter a valid email address.';
+        } else if (code === 'auth/weak-password') {
+          message = 'The password is too weak.';
+        }
+      }
+      setError(message);
     } finally {
       setLoading(false);
     }
