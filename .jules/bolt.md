@@ -1,0 +1,3 @@
+## 2025-05-15 - Optimizing High-Frequency Event Listeners in Next.js
+**Learning:** High-frequency event listeners (like 'scroll') in large components cause massive re-renders. Converting the page to a Server Component and moving interactivity to a leaf 'Client Component' with a throttled (`requestAnimationFrame`) and passive listener significantly improves performance and responsiveness.
+**Action:** Always identify if a Client Component can be split into a Server Component with leaf Client Components for interactivity. Use `requestAnimationFrame` and `passive: true` for scroll/resize listeners. Avoid CSS transitions on properties updated by high-frequency JS listeners.
