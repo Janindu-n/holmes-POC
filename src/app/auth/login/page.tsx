@@ -15,6 +15,13 @@ export default function Login() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // ✅ Sentinel: Initialization guard
+    if (!auth) {
+      setError('Authentication service is currently unavailable');
+      return;
+    }
+
     setLoading(true);
     setError('');
 
