@@ -10,7 +10,9 @@ import { auth, db } from '@/lib/firebase';
 function RegisterForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const role = searchParams.get('role') || 'client';
+  // ✅ Sentinel: Role validation allowlist
+  const rawRole = searchParams.get('role') || 'client';
+  const role = ['client', 'specialist'].includes(rawRole) ? rawRole : 'client';
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -20,6 +22,23 @@ function RegisterForm() {
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // ✅ Sentinel: Input length validation
+    if (name.trim().length < 2) {
+      setError('Name must be at least 2 characters');
+      return;
+    }
+    if (password.length < 6) {
+      setError('Password must be at least 6 characters');
+      return;
+    }
+
+    // ✅ Sentinel: Initialization guard
+    if (!auth || !db) {
+      setError('Authentication service is currently unavailable');
+      return;
+    }
+
     setLoading(true);
     setError('');
 
@@ -38,7 +57,15 @@ function RegisterForm() {
 
       router.push('/dashboard');
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Failed to create an account');
+      // ✅ Sentinel: Generic error messages based on code to avoid leakage
+      let message = 'Failed to create account';
+      if (err && typeof err === 'object' && 'code' in err) {
+        const code = err.code as string;
+        if (code === 'auth/email-already-in-use') message = 'This email is already registered';
+        if (code === 'auth/weak-password') message = 'Password is too weak';
+        if (code === 'auth/invalid-email') message = 'Invalid email address';
+      }
+      setError(message);
     } finally {
       setLoading(false);
     }
