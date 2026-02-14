@@ -10,7 +10,10 @@ import { auth, db } from '@/lib/firebase';
 function RegisterForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const role = searchParams.get('role') || 'client';
+
+  // Security Enhancement: Validate role against allowlist
+  const rawRole = searchParams.get('role') || 'client';
+  const role = ['client', 'specialist'].includes(rawRole) ? rawRole : 'client';
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -22,6 +25,26 @@ function RegisterForm() {
     e.preventDefault();
     setLoading(true);
     setError('');
+
+    // Security Enhancement: Initialization guards
+    if (!auth || !db) {
+      setError('System initialization failed. Please try again later.');
+      setLoading(false);
+      return;
+    }
+
+    // Security Enhancement: Input validation
+    if (name.length < 2) {
+      setError('Name must be at least 2 characters long');
+      setLoading(false);
+      return;
+    }
+
+    if (password.length < 8) {
+      setError('Password must be at least 8 characters long');
+      setLoading(false);
+      return;
+    }
 
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
@@ -38,7 +61,15 @@ function RegisterForm() {
 
       router.push('/dashboard');
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Failed to create an account');
+      // Security Enhancement: Sanitize error messages
+      let message = 'Failed to create an account';
+      if (err && typeof err === 'object' && 'code' in err) {
+        const code = err.code as string;
+        if (code === 'auth/email-already-in-use') message = 'This email is already in use';
+        else if (code === 'auth/weak-password') message = 'Password is too weak';
+        else if (code === 'auth/invalid-email') message = 'Invalid email format';
+      }
+      setError(message);
     } finally {
       setLoading(false);
     }
