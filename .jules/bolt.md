@@ -1,0 +1,3 @@
+## 2025-05-15 - Optimizing Landing Page Scroll Performance
+**Learning:** High-frequency events like 'scroll' that update state in a top-level component trigger reconciliation for the entire sub-tree, even if most of it is static. Wrapping state updates in requestAnimationFrame and using passive listeners significantly reduces main thread blocking. Moving these interactive elements into leaf Client Components allows the rest of the page to be optimized as Server Components.
+**Action:** Always isolate scroll-based animations into dedicated leaf Client Components and use throttled/passive listeners.
