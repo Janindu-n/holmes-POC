@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { auth } from '@/lib/firebase';
-import { signOut } from 'firebase/auth';
+import { signOut, onAuthStateChanged } from 'firebase/auth';
 import dynamic from 'next/dynamic';
 import { Job, JobStatus, JOB_STATUS_LABELS, JOB_STATUS_ORDER } from '@/types/job';
 
@@ -46,6 +46,38 @@ const STATUS_ICONS: Record<JobStatus, string> = {
 export default function Dashboard() {
   const router = useRouter();
   const [job] = useState<Job>(MOCK_JOB);
+  const [authLoading, setAuthLoading] = useState(true);
+
+  useEffect(() => {
+    // Basic authentication guard
+    if (!auth) {
+      router.push('/auth/login');
+      return;
+    }
+
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        router.push('/auth/login');
+      } else {
+        setAuthLoading(false);
+      }
+    });
+
+    return () => unsubscribe();
+  }, [router]);
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-stone-50 dark:bg-stone-900 flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <span className="material-symbols-outlined text-primary text-5xl animate-spin">
+            progress_activity
+          </span>
+          <p className="text-stone-500 dark:text-stone-400 font-medium">Verifying Session...</p>
+        </div>
+      </div>
+    );
+  }
 
   const handleLogout = async () => {
     try {

@@ -1,0 +1,4 @@
+## 2025-02-15 - [Client-side Authentication Guard Content Leak]
+**Vulnerability:** In client-side authentication guards (e.g., in `src/app/dashboard/page.tsx`), protected content could briefly "flash" or be rendered in the DOM before the `useEffect` hook triggered a redirect for unauthenticated users.
+**Learning:** Purely reactive redirects in `useEffect` without a corresponding loading state allowed the initial render to bypass the authentication check, potentially exposing sensitive mock data or UI structures.
+**Prevention:** Always implement an `authLoading` (or similar) state that defaults to `true`. Conditionally render a loading indicator or skeleton while the authentication state is being verified by Firebase's `onAuthStateChanged`. Only render protected content once the user is confirmed as authenticated.
