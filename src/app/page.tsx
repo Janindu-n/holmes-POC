@@ -1,22 +1,8 @@
-'use client';
-
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import Link from 'next/link';
+import HeroParallax from '@/components/HeroParallax';
 
 export default function Home() {
-  const [scrollY, setScrollY] = useState(0);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrollY(window.scrollY);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  const opacity = Math.max(1 - scrollY / 400, 0);
-  const translateY = scrollY / 3;
-
   return (
     <div className="bg-background-light dark:bg-background-dark text-stone-900 dark:text-white font-display min-h-screen">
       {/* Header */}
@@ -48,13 +34,7 @@ export default function Home() {
       <section className="relative overflow-hidden bg-background-light dark:bg-background-dark pt-16 pb-20 lg:pt-24 lg:pb-28">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-8 items-center">
-            <div
-              className="flex flex-col gap-6 text-left max-w-2xl transition-all duration-75"
-              style={{
-                opacity: opacity,
-                transform: `translateY(${translateY}px)`
-              }}
-            >
+            <HeroParallax>
               <div className="inline-flex w-fit items-center gap-2 rounded-full border border-orange-200 bg-orange-50 px-3 py-1 text-xs font-semibold text-orange-800 dark:border-orange-900 dark:bg-orange-900/30 dark:text-orange-300">
                 <span className="relative flex h-2 w-2">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
@@ -87,7 +67,7 @@ export default function Home() {
                 </div>
                 <p>Trusted by 500+ homeowners</p>
               </div>
-            </div>
+            </HeroParallax>
             <div className="relative lg:h-auto h-[400px] w-full rounded-2xl overflow-hidden shadow-2xl">
               <div className="absolute inset-0 bg-gradient-to-t from-stone-900/60 via-transparent to-transparent z-10"></div>
               <div className="absolute bottom-6 left-6 right-6 z-20 text-white">
@@ -107,7 +87,7 @@ export default function Home() {
       <div className="border-y border-stone-200 bg-white py-8 dark:border-stone-800 dark:bg-stone-900">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <p className="mb-6 text-center text-sm font-semibold uppercase tracking-wider text-stone-500">Insured & Vetted Partners</p>
-          <div className="flex flex-wrap justify-center items-center gap-8 md:gap-16 opacity-60 grayscale transition-all duration-500 hover:grayscale-0 hover:opacity-100">
+          <div className="flex flex-wrap justify-center items-center gap-8 md:gap-16 opacity-60 grayscale transition-[filter,opacity] duration-500 hover:grayscale-0 hover:opacity-100">
             <div className="h-8 text-stone-800 dark:text-white font-bold text-xl flex items-center gap-1"><span className="material-symbols-outlined">security</span> SafeGuard</div>
             <div className="h-8 text-stone-800 dark:text-white font-bold text-xl flex items-center gap-1"><span className="material-symbols-outlined">nest_cam_iq_outdoor</span> NestHome</div>
             <div className="h-8 text-stone-800 dark:text-white font-bold text-xl flex items-center gap-1"><span className="material-symbols-outlined">key</span> SmartLock</div>
