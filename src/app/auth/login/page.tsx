@@ -49,6 +49,7 @@ export default function Login() {
               <input
                 type="email"
                 required
+                maxLength={255}
                 className="w-full px-4 py-2 rounded-lg border border-stone-300 dark:border-stone-600 dark:bg-stone-800 focus:ring-2 focus:ring-primary focus:border-primary transition-all outline-none"
                 placeholder="john@example.com"
                 value={email}
@@ -65,6 +66,7 @@ export default function Login() {
               <input
                 type="password"
                 required
+                maxLength={100}
                 className="w-full px-4 py-2 rounded-lg border border-stone-300 dark:border-stone-600 dark:bg-stone-800 focus:ring-2 focus:ring-primary focus:border-primary transition-all outline-none"
                 placeholder="••••••••"
                 value={password}
