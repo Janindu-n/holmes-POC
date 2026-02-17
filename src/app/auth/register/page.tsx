@@ -10,7 +10,8 @@ import { auth, db } from '@/lib/firebase';
 function RegisterForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const role = searchParams.get('role') || 'client';
+  const rawRole = searchParams.get('role');
+  const role = (rawRole === 'specialist') ? 'specialist' : 'client';
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -68,6 +69,7 @@ function RegisterForm() {
               <input
                 type="text"
                 required
+                maxLength={100}
                 className="w-full px-4 py-2 rounded-lg border border-stone-300 dark:border-stone-600 dark:bg-stone-800 focus:ring-2 focus:ring-primary focus:border-primary transition-all outline-none"
                 placeholder="John Doe"
                 value={name}
@@ -81,6 +83,7 @@ function RegisterForm() {
               <input
                 type="email"
                 required
+                maxLength={255}
                 className="w-full px-4 py-2 rounded-lg border border-stone-300 dark:border-stone-600 dark:bg-stone-800 focus:ring-2 focus:ring-primary focus:border-primary transition-all outline-none"
                 placeholder="john@example.com"
                 value={email}
@@ -94,6 +97,7 @@ function RegisterForm() {
               <input
                 type="password"
                 required
+                maxLength={100}
                 className="w-full px-4 py-2 rounded-lg border border-stone-300 dark:border-stone-600 dark:bg-stone-800 focus:ring-2 focus:ring-primary focus:border-primary transition-all outline-none"
                 placeholder="••••••••"
                 value={password}
