@@ -1,0 +1,3 @@
+## 2025-05-14 - Optimized Landing Page Parallax and Server Component Conversion
+**Learning:** High-frequency scroll animations in React can cause excessive re-renders of the entire component tree if driven by state. Isolating these into leaf Client Components and using direct DOM manipulation with `requestAnimationFrame` and passive listeners significantly improves performance and allows the parent page to remain a static Server Component.
+**Action:** Always look for scroll or mouse event listeners that update React state for visual-only changes; move them to dedicated components that use refs for direct style updates.
