@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { auth } from '@/lib/firebase';
-import { signOut } from 'firebase/auth';
+import { signOut, onAuthStateChanged } from 'firebase/auth';
 import dynamic from 'next/dynamic';
 import { Job, JobStatus, JOB_STATUS_LABELS, JOB_STATUS_ORDER } from '@/types/job';
 
@@ -45,7 +45,26 @@ const STATUS_ICONS: Record<JobStatus, string> = {
 
 export default function Dashboard() {
   const router = useRouter();
+  const [authLoading, setAuthLoading] = useState(true);
   const [job] = useState<Job>(MOCK_JOB);
+
+  useEffect(() => {
+    if (!auth) {
+      router.push('/auth/login');
+      return;
+    }
+
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        setAuthLoading(true);
+        router.push('/auth/login');
+      } else {
+        setAuthLoading(false);
+      }
+    });
+
+    return () => unsubscribe();
+  }, [router]);
 
   const handleLogout = async () => {
     try {
@@ -55,6 +74,17 @@ export default function Dashboard() {
       console.error('Error signing out:', error);
     }
   };
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-dashboard-bg dark:bg-background-dark flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="size-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-stone-500 font-medium animate-pulse">Verifying Session...</p>
+        </div>
+      </div>
+    );
+  }
 
   const currentStatusIndex = JOB_STATUS_ORDER.indexOf(job.status);
 
