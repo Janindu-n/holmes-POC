@@ -10,7 +10,10 @@ import { auth, db } from '@/lib/firebase';
 function RegisterForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const role = searchParams.get('role') || 'client';
+
+  // Validate user role to prevent role injection
+  const rawRole = searchParams.get('role');
+  const role = (rawRole === 'client' || rawRole === 'specialist') ? rawRole : 'client';
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -20,8 +23,20 @@ function RegisterForm() {
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
     setError('');
+
+    // Basic input validation
+    if (!name.trim()) {
+      setError('Please enter your full name');
+      return;
+    }
+
+    if (password.length < 8) {
+      setError('Password must be at least 8 characters long');
+      return;
+    }
+
+    setLoading(true);
 
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
