@@ -1,0 +1,3 @@
+## 2025-02-23 - Optimized Landing Page Performance via Leaf Component Isolation
+**Learning:** Tracking high-frequency events (like `window.scrollY`) in a top-level Client Component triggers full-page re-renders on every update. By refactoring the page to a Server Component and isolating interactive logic into a leaf Client Component using `requestAnimationFrame` and direct DOM manipulation (`useRef`), we bypass React's reconciliation overhead and enable static generation for the main page content.
+**Action:** Always prefer isolating high-frequency state updates or event listeners into dedicated "leaf" components. Use direct DOM updates for 60fps animations instead of React state when performance is critical.
