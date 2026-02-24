@@ -1,0 +1,3 @@
+## 2025-05-14 - Isolating High-Frequency Scroll Effects
+**Learning:** Inlining scroll-based parallax effects in large page components (like `src/app/page.tsx`) causes full-page re-renders on every scroll pixel. This significantly degrades Interaction to Next Paint (INP) and causes visual jank. Isolating the effect into a dedicated leaf Client Component using `useRef` and `requestAnimationFrame` maintains page-level static generation and optimizes runtime performance.
+**Action:** Always move high-frequency UI updates (scroll, mouse move, etc.) into the smallest possible leaf components and bypass React's state reconciliation using direct DOM manipulation if necessary.
