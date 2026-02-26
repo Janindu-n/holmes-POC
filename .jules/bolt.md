@@ -1,0 +1,3 @@
+## 2025-05-14 - Optimized Scroll Parallax and Server Component Migration
+**Learning:** Migrating a high-frequency animation (like scroll parallax) from React state to direct DOM manipulation with `requestAnimationFrame` significantly reduces re-renders. Additionally, isolating this logic into a leaf Client Component allows the parent page to be converted into a Server Component, improving initial load and reducing client-side bundle size.
+**Action:** Always look for opportunities to isolate high-frequency client-side logic into dedicated leaf components to enable Server Component optimization for the rest of the page.
