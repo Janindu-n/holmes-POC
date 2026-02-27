@@ -1,0 +1,3 @@
+## 2025-05-14 - Isolate high-frequency scroll parallax logic
+**Learning:** Using React state to track scroll position for parallax effects causes the entire component (and its children) to re-render on every scroll event. This leads to main-thread jank and prevents the page from being a Server Component.
+**Action:** Extract scroll-linked animation logic into a dedicated "leaf" Client Component. Use `useRef` for direct DOM manipulation and `requestAnimationFrame` with a "ticking" flag to throttle updates to one per repaint cycle. This enables the parent page to become a Server Component, improving load performance.
