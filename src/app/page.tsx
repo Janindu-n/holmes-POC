@@ -1,21 +1,40 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import Link from 'next/link';
 
 export default function Home() {
-  const [scrollY, setScrollY] = useState(0);
+  const heroRef = useRef<HTMLDivElement>(null);
+  const ticking = useRef(false);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrollY(window.scrollY);
+    const updateParallax = () => {
+      if (heroRef.current) {
+        const scrollY = window.scrollY;
+        const opacity = Math.max(1 - scrollY / 400, 0);
+        const translateY = scrollY / 3;
+        heroRef.current.style.opacity = opacity.toString();
+        heroRef.current.style.transform = `translateY(${translateY}px)`;
+      }
+      ticking.current = false;
     };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
-  const opacity = Math.max(1 - scrollY / 400, 0);
-  const translateY = scrollY / 3;
+    const handleScroll = () => {
+      if (!ticking.current) {
+        requestAnimationFrame(updateParallax);
+        ticking.current = true;
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+
+    // Sync initial position for refreshes
+    updateParallax();
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
 
   return (
     <div className="bg-background-light dark:bg-background-dark text-stone-900 dark:text-white font-display min-h-screen">
@@ -49,11 +68,8 @@ export default function Home() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-8 items-center">
             <div
-              className="flex flex-col gap-6 text-left max-w-2xl transition-all duration-75"
-              style={{
-                opacity: opacity,
-                transform: `translateY(${translateY}px)`
-              }}
+              ref={heroRef}
+              className="flex flex-col gap-6 text-left max-w-2xl will-change-[transform,opacity]"
             >
               <div className="inline-flex w-fit items-center gap-2 rounded-full border border-orange-200 bg-orange-50 px-3 py-1 text-xs font-semibold text-orange-800 dark:border-orange-900 dark:bg-orange-900/30 dark:text-orange-300">
                 <span className="relative flex h-2 w-2">
@@ -107,7 +123,7 @@ export default function Home() {
       <div className="border-y border-stone-200 bg-white py-8 dark:border-stone-800 dark:bg-stone-900">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <p className="mb-6 text-center text-sm font-semibold uppercase tracking-wider text-stone-500">Insured & Vetted Partners</p>
-          <div className="flex flex-wrap justify-center items-center gap-8 md:gap-16 opacity-60 grayscale transition-all duration-500 hover:grayscale-0 hover:opacity-100">
+          <div className="flex flex-wrap justify-center items-center gap-8 md:gap-16 opacity-60 grayscale transition-[filter,opacity] duration-500 hover:grayscale-0 hover:opacity-100">
             <div className="h-8 text-stone-800 dark:text-white font-bold text-xl flex items-center gap-1"><span className="material-symbols-outlined">security</span> SafeGuard</div>
             <div className="h-8 text-stone-800 dark:text-white font-bold text-xl flex items-center gap-1"><span className="material-symbols-outlined">nest_cam_iq_outdoor</span> NestHome</div>
             <div className="h-8 text-stone-800 dark:text-white font-bold text-xl flex items-center gap-1"><span className="material-symbols-outlined">key</span> SmartLock</div>
@@ -232,7 +248,7 @@ export default function Home() {
           </h2>
           <div className="mt-8 flex flex-col items-center justify-center gap-2">
             <div className="size-12 overflow-hidden rounded-full bg-stone-200">
-              <img alt="Customer Avatar" className="h-full w-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuASsRqylbw-D4F7Rqt0AMKPTIBRASKQ0J9o24VlmGnMYE7MOP7ibHKmGIpgJjt7TX70Pqxu0A_MvHAskLl5MtveI5whEhbgJVfAFLHam-qx1Dh4wP_jn-xxqI-7yjPV5ih8VG355rR69CQqWtaIHhZIKg1sdXETfI49qE2iKbk-8XVzkYcXUrPyVqkrc943kSompL9J1rroSmCioTVNKs7QMzRUqGKb3WM3v_0Av64H3_X1jp7Vb0WGRlUoDRkPZxw-Khjiiii0gApF"/>
+              <img alt="Customer Avatar" loading="lazy" className="h-full w-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuASsRqylbw-D4F7Rqt0AMKPTIBRASKQ0J9o24VlmGnMYE7MOP7ibHKmGIpgJjt7TX70Pqxu0A_MvHAskLl5MtveI5whEhbgJVfAFLHam-qx1Dh4wP_jn-xxqI-7yjPV5ih8VG355rR69CQqWtaIHhZIKg1sdXETfI49qE2iKbk-8XVzkYcXUrPyVqkrc943kSompL9J1rroSmCioTVNKs7QMzRUqGKb3WM3v_0Av64H3_X1jp7Vb0WGRlUoDRkPZxw-Khjiiii0gApF"/>
             </div>
             <div className="text-base font-semibold text-stone-900 dark:text-white">Aruni P.</div>
             <div className="text-sm text-stone-500">Property Owner, Melbourne</div>
