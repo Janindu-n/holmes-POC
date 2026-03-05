@@ -1,0 +1,4 @@
+## 2025-05-14 - [Client-Side Authentication Guard in Next.js]
+**Vulnerability:** The `/dashboard` route was accessible to unauthenticated users, exposing sensitive (though currently mock) user data and application state.
+**Learning:** In a client-side rendered Next.js application using Firebase, routes are not protected by default. Relying on components to handle their own data fetching without an authentication check allows the UI to render before the user's identity is verified.
+**Prevention:** Implement a client-side authentication guard using `onAuthStateChanged`. Use an `authLoading` state to show a "Securing your session..." indicator to prevent unauthorized content from flashing. Always handle cases where the Firebase `auth` object might be null due to missing environment configuration.
