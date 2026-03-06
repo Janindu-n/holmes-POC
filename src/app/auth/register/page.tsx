@@ -10,7 +10,12 @@ import { auth, db } from '@/lib/firebase';
 function RegisterForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const role = searchParams.get('role') || 'client';
+
+  // 🛡️ SENTINEL: Validate user role from query parameters to prevent privilege escalation.
+  // Only allow predefined roles and default to 'client' for any invalid or missing input.
+  const VALID_ROLES = ['client', 'specialist'];
+  const rawRole = searchParams.get('role');
+  const role = rawRole && VALID_ROLES.includes(rawRole) ? rawRole : 'client';
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
