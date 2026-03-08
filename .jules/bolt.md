@@ -1,0 +1,3 @@
+## 2025-03-08 - [Optimizing Large Landing Pages with RAF and Server Components]
+**Learning:** For high-frequency interactions like scroll parallax, using React state at the page level causes expensive full-tree re-renders. Converting the page to a Server Component and moving animation logic to a specialized leaf Client Component using `requestAnimationFrame` and `useRef` (bypassing React state) eliminates these re-renders and allows for static generation.
+**Action:** Always look for full-page `use client` directives triggered by simple scroll/mouse tracking; refactor these into targeted RAF-based components to enable RSC benefits for the rest of the page.
