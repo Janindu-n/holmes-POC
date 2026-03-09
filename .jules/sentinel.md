@@ -1,0 +1,4 @@
+## 2025-05-14 - [Authentication Gap in Client-Side Dashboard]
+**Vulnerability:** Sensitive client-side routes (e.g., /dashboard) were accessible without authentication because they lacked an explicit session check.
+**Learning:** In Next.js App Router, 'use client' pages that interact with Firebase do not automatically inherit authentication protection. Without an explicit guard, the UI (including sensitive mock data or layout) can be briefly or fully exposed to unauthenticated users.
+**Prevention:** Implement a client-side authentication guard using Firebase's `onAuthStateChanged` in a `useEffect` hook. Use an `authLoading` state to display a secure placeholder while the session is being verified, and redirect unauthenticated users to the login page. Ensure the guard also handles cases where the Firebase `auth` object itself might be null (e.g., initialization failure).
