@@ -1,0 +1,3 @@
+## 2026-03-11 - [Optimized Scroll Parallax]
+**Learning:** Using React state for high-frequency updates like scroll-based parallax triggers component-wide re-renders on every scroll event, which is extremely inefficient. Direct DOM manipulation using `useRef` combined with `requestAnimationFrame` and `passive: true` scroll listeners significantly improves performance by bypassing React's reconciliation loop and ensuring updates happen only once per frame.
+**Action:** Always favor `useRef` and direct DOM updates with `requestAnimationFrame` for high-frequency visual animations (scroll, mouse move, etc.) and ensure any CSS transitions on these elements are removed to prevent interpolation conflicts.
