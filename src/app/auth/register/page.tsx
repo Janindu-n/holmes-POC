@@ -10,7 +10,9 @@ import { auth, db } from '@/lib/firebase';
 function RegisterForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const role = searchParams.get('role') || 'client';
+  // 🛡️ Sentinel: Validate role to prevent privilege escalation via URL parameters
+  const rawRole = searchParams.get('role');
+  const role = (rawRole === 'client' || rawRole === 'specialist') ? rawRole : 'client';
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -24,6 +26,11 @@ function RegisterForm() {
     setError('');
 
     try {
+      // 🛡️ Sentinel: Defensive check for Firebase initialization
+      if (!auth || !db) {
+        throw new Error('Authentication service is currently unavailable');
+      }
+
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       await updateProfile(userCredential.user, { displayName: name });
 
@@ -37,8 +44,10 @@ function RegisterForm() {
       });
 
       router.push('/dashboard');
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Failed to create an account');
+    } catch {
+      // 🛡️ Sentinel: Use generic error messages to prevent information leakage (e.g. account enumeration)
+      // Note: We avoid logging the raw error object to the console in production to prevent leaking system details.
+      setError('An error occurred during registration. Please check your details and try again.');
     } finally {
       setLoading(false);
     }
