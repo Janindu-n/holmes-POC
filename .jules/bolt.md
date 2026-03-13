@@ -1,0 +1,3 @@
+## 2025-05-15 - [Direct DOM Manipulation for Parallax]
+**Learning:** Using React `useState` to track scroll position for parallax effects on large components (like `src/app/page.tsx`) causes full-component re-renders on every scroll event, leading to significant main-thread overhead and potentially dropped frames.
+**Action:** Use `useRef` for target elements and update styles directly via the DOM API inside a `requestAnimationFrame` loop with a `ticking` flag. This bypasses React's reconciliation and maintains 60fps performance even for large component trees. Ensure `{ passive: true }` is used for the scroll listener and remove CSS `transition` properties from animated elements to prevent interpolation conflicts.
