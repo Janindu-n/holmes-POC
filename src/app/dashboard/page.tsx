@@ -51,8 +51,9 @@ export default function Dashboard() {
     try {
       await signOut(auth);
       router.push('/');
-    } catch (error) {
-      console.error('Error signing out:', error);
+    } catch {
+      // Secure logging: avoid exposing raw error details to the console
+      console.error('Logout failed. Please try again.');
     }
   };
 
