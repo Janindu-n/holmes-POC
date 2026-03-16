@@ -1,0 +1,3 @@
+## 2025-05-14 - Optimized Scroll Parallax and Image Loading
+**Learning:** State-driven scroll animations in React (e.g., updating a `scrollY` state on every scroll event) trigger full component re-renders, which can be extremely expensive in large landing pages like `src/app/page.tsx`. Additionally, `backgroundImage` on `div` elements prevents native browser lazy loading.
+**Action:** Use `useRef` and `requestAnimationFrame` for high-frequency DOM updates (like parallax) to bypass React's reconciliation. Replace decorative `backgroundImage` divs with semantic `<img>` tags using `object-cover` and `loading="lazy"` for better performance and accessibility.
