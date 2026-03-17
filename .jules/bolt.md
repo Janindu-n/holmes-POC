@@ -1,0 +1,3 @@
+## 2025-05-15 - Optimizing High-Frequency Animations & Asset Delivery
+**Learning:** React state reconciliation on every scroll event (e.g., parallax) is a significant bottleneck that can drop frames. Bypassing React via `useRef` + `requestAnimationFrame` + direct DOM manipulation ensures 60fps. Additionally, while `loading="lazy"` is great for off-screen assets, applying it to LCP (Hero) images negatively impacts performance.
+**Action:** Use direct DOM updates for high-frequency UI changes. Always prioritize above-the-fold assets with `fetchPriority="high"` and avoid `loading="lazy"` on LCP elements.
