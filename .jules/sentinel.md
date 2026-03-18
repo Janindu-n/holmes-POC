@@ -1,0 +1,4 @@
+## 2025-05-14 - Fix missing authentication guard on dashboard
+**Vulnerability:** The `/dashboard` route was accessible without any authentication check, allowing unauthenticated users to view sensitive job and property information.
+**Learning:** Client-side 'use client' pages in Next.js require explicit authentication listeners (like Firebase's `onAuthStateChanged`) to secure content. Relying solely on the presence of an `auth` object is insufficient as it can be null during the initial render or if the session is not yet initialized.
+**Prevention:** Implement a standard authentication guard pattern for all protected routes that includes an 'authLoading' state. This ensures the system fails securely by defaulting to a protected/loading state and only revealing content after successful authentication.
