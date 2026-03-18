@@ -1,0 +1,3 @@
+## 2025-05-15 - [Hero Parallax Scroll Optimization]
+**Learning:** Updating React state on every scroll event (e.g., `setScrollY(window.scrollY)`) triggers expensive component-wide re-renders that significantly degrade FPS, especially on complex landing pages. CSS `transition-all` on animated elements conflicts with direct DOM updates, causing 'mushy' movement.
+**Action:** Move scroll-driven visual updates to a `useRef` + `requestAnimationFrame` pattern to bypass React's reconciliation. Use `will-change: transform, opacity` for GPU acceleration and always remove CSS transitions from elements being directly manipulated by JS.
