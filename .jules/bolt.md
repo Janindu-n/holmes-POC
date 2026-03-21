@@ -1,0 +1,3 @@
+## 2026-03-21 - [Parallax Optimization]
+**Learning:** React state updates on every scroll event (e.g., for parallax) cause full component re-renders, which is extremely expensive for large components like 'src/app/page.tsx' (>25k chars). Using 'useRef' and 'requestAnimationFrame' to manipulate the DOM directly bypasses the React render cycle, achieving 60fps performance without re-render overhead.
+**Action:** For high-frequency visual updates (scroll, mouse move), prioritize direct DOM updates over React state. Ensure initial synchronization by calling the update function once on mount within 'useEffect'.
