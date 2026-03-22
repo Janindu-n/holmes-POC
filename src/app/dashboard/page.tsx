@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { auth } from '@/lib/firebase';
-import { signOut } from 'firebase/auth';
+import { signOut, onAuthStateChanged } from 'firebase/auth';
 import dynamic from 'next/dynamic';
 import { Job, JobStatus, JOB_STATUS_LABELS, JOB_STATUS_ORDER } from '@/types/job';
 
@@ -46,19 +46,55 @@ const STATUS_ICONS: Record<JobStatus, string> = {
 export default function Dashboard() {
   const router = useRouter();
   const [job] = useState<Job>(MOCK_JOB);
+  const [authLoading, setAuthLoading] = useState(true);
+  const [logoutError, setLogoutError] = useState<string | null>(null);
+
+  // Security: Protect the dashboard by verifying the user's authentication state
+  useEffect(() => {
+    if (!auth) {
+      router.push('/auth/login');
+      return;
+    }
+
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        // Redirect unauthorized users to login
+        router.push('/auth/login');
+      } else {
+        setAuthLoading(false);
+      }
+    });
+
+    return () => unsubscribe();
+  }, [router]);
 
   const handleLogout = async () => {
+    setLogoutError(null);
     try {
-      await signOut(auth);
-      router.push('/');
-    } catch (error) {
-      console.error('Error signing out:', error);
+      if (auth) {
+        await signOut(auth);
+        router.push('/');
+      }
+    } catch {
+      // Security: Do not log the raw error object to prevent internal detail leakage
+      setLogoutError('An error occurred during logout. Please try again.');
     }
   };
 
   const currentStatusIndex = JOB_STATUS_ORDER.indexOf(job.status);
 
   const canShowStream = currentStatusIndex >= JOB_STATUS_ORDER.indexOf('started');
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-dashboard-bg dark:bg-background-dark">
+        <div className="flex flex-col items-center gap-4">
+          <div className="size-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-stone-600 dark:text-stone-400 font-medium">Securing your session...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-dashboard-bg dark:bg-background-dark font-display text-stone-600 dark:text-stone-300 min-h-screen flex flex-col overflow-x-hidden transition-colors duration-200">
@@ -95,13 +131,20 @@ export default function Dashboard() {
                 <span className="material-symbols-outlined">notifications</span>
                 <span className="absolute top-2 right-2 size-2 bg-secondary rounded-full border border-card-light dark:border-surface-dark"></span>
               </button>
-              <button
-                onClick={handleLogout}
-                className="flex items-center justify-center p-2 text-stone-500 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-700 rounded-lg transition-colors"
-                title="Sign Out"
-              >
-                <span className="material-symbols-outlined">logout</span>
-              </button>
+              <div className="relative">
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center justify-center p-2 text-stone-500 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-700 rounded-lg transition-colors"
+                  title="Sign Out"
+                >
+                  <span className="material-symbols-outlined">logout</span>
+                </button>
+                {logoutError && (
+                  <div className="absolute top-full right-0 mt-2 w-48 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-2 rounded text-[10px] text-red-600 dark:text-red-400 z-50">
+                    {logoutError}
+                  </div>
+                )}
+              </div>
               <div className="size-9 rounded-full bg-stone-200 overflow-hidden border border-stone-200 dark:border-stone-600 cursor-pointer">
                 <img alt="User Profile" className="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCooRgWQXUK6jdIrdSYeqWjfVhT4B0FxuYni-tjM9KsX1cZKRV5fTBR9UrjqYKTqWnuvy1gxEU4T3T32MBXL4x7oP--xNRoGzlR_sdj6JplWyzuyVVtdPedCQ3k-TSA1LDYnssuJhZxtaKmPDNwzJe3yXkMbAyW0xEpTXlBfUkqYMB2RQ6O0EVdeanIJf1itIlcMo8zzIeL6xM7OMoE3KlTbLV2_2hGD4fVbVTrSZ3k0s3U9Cx0JyLyGiAWGTWqsY4fmqqn4RcdiKtb"/>
               </div>
