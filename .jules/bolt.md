@@ -1,0 +1,3 @@
+## 2025-05-15 - Parallax Scroll Re-render Optimization
+**Learning:** Using React state (`useState`) to track scroll position for parallax effects causes the entire component (and its children) to re-render on every scroll event (e.g., 20+ times per 1000px). This results in high main-thread overhead and "mushy" animation if `transition-all` is also present.
+**Action:** Replace React state with `useRef` and a `requestAnimationFrame` (rAF) loop using a `ticking` flag to throttle updates. Manipulate the DOM directly (`element.style.transform = ...`) to achieve 0 re-renders during high-frequency interactions. Ensure `will-change` is added to target elements and `transition-all` is removed to prevent interpolation conflicts.
