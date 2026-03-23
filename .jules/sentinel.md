@@ -1,0 +1,4 @@
+## 2025-05-14 - [Auth and Registration Security]
+**Vulnerability:** The `/dashboard` route lacked an authentication guard, allowing unauthenticated users to view the dashboard UI (though mock data was used). Additionally, the registration page was vulnerable to privilege escalation via the `role` query parameter and leaked internal Firebase error details through the UI.
+**Learning:** Client-side routes in Next.js require explicit protection using Firebase's `onAuthStateChanged`. Trusting query parameters for sensitive fields like user roles without whitelisting allows for easy exploitation.
+**Prevention:** Implement an authentication guard for all sensitive client-side routes. Always whitelist inputs that determine user privileges and sanitize all error messages before displaying them to the user.
