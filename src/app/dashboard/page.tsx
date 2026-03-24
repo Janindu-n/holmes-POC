@@ -7,6 +7,7 @@ import { auth } from '@/lib/firebase';
 import { signOut } from 'firebase/auth';
 import dynamic from 'next/dynamic';
 import { Job, JobStatus, JOB_STATUS_LABELS, JOB_STATUS_ORDER } from '@/types/job';
+import AuthGuard from '@/components/AuthGuard';
 
 const MuxPlayer = dynamic(() => import('@mux/mux-player-react'), {
   ssr: false,
@@ -61,7 +62,8 @@ export default function Dashboard() {
   const canShowStream = currentStatusIndex >= JOB_STATUS_ORDER.indexOf('started');
 
   return (
-    <div className="bg-dashboard-bg dark:bg-background-dark font-display text-stone-600 dark:text-stone-300 min-h-screen flex flex-col overflow-x-hidden transition-colors duration-200">
+    <AuthGuard>
+      <div className="bg-dashboard-bg dark:bg-background-dark font-display text-stone-600 dark:text-stone-300 min-h-screen flex flex-col overflow-x-hidden transition-colors duration-200">
       {/* Navigation */}
       <nav className="sticky top-0 z-50 w-full bg-card-light/80 dark:bg-surface-dark/80 backdrop-blur-md border-b border-stone-200 dark:border-stone-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -420,6 +422,7 @@ export default function Dashboard() {
           <span className="material-symbols-outlined text-2xl">add</span>
         </button>
       </main>
-    </div>
+      </div>
+    </AuthGuard>
   );
 }
