@@ -7,6 +7,7 @@ import { auth } from '@/lib/firebase';
 import { signOut } from 'firebase/auth';
 import dynamic from 'next/dynamic';
 import { Job, JobStatus, JOB_STATUS_LABELS, JOB_STATUS_ORDER } from '@/types/job';
+import AuthGuard from '@/components/AuthGuard';
 
 const MuxPlayer = dynamic(() => import('@mux/mux-player-react'), {
   ssr: false,
@@ -47,12 +48,15 @@ export default function Dashboard() {
   const router = useRouter();
   const [job] = useState<Job>(MOCK_JOB);
 
+  const [logoutError, setLogoutError] = useState<string | null>(null);
+
   const handleLogout = async () => {
     try {
       await signOut(auth);
       router.push('/');
-    } catch (error) {
-      console.error('Error signing out:', error);
+    } catch {
+      // Use generic error message instead of logging raw error to prevent info leakage
+      setLogoutError('Failed to sign out. Please try again.');
     }
   };
 
@@ -61,8 +65,9 @@ export default function Dashboard() {
   const canShowStream = currentStatusIndex >= JOB_STATUS_ORDER.indexOf('started');
 
   return (
-    <div className="bg-dashboard-bg dark:bg-background-dark font-display text-stone-600 dark:text-stone-300 min-h-screen flex flex-col overflow-x-hidden transition-colors duration-200">
-      {/* Navigation */}
+    <AuthGuard>
+      <div className="bg-dashboard-bg dark:bg-background-dark font-display text-stone-600 dark:text-stone-300 min-h-screen flex flex-col overflow-x-hidden transition-colors duration-200">
+        {/* Navigation */}
       <nav className="sticky top-0 z-50 w-full bg-card-light/80 dark:bg-surface-dark/80 backdrop-blur-md border-b border-stone-200 dark:border-stone-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
@@ -95,13 +100,20 @@ export default function Dashboard() {
                 <span className="material-symbols-outlined">notifications</span>
                 <span className="absolute top-2 right-2 size-2 bg-secondary rounded-full border border-card-light dark:border-surface-dark"></span>
               </button>
-              <button
-                onClick={handleLogout}
-                className="flex items-center justify-center p-2 text-stone-500 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-700 rounded-lg transition-colors"
-                title="Sign Out"
-              >
-                <span className="material-symbols-outlined">logout</span>
-              </button>
+              <div className="relative">
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center justify-center p-2 text-stone-500 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-700 rounded-lg transition-colors"
+                  title="Sign Out"
+                >
+                  <span className="material-symbols-outlined">logout</span>
+                </button>
+                {logoutError && (
+                  <div className="absolute top-full right-0 mt-2 w-48 p-2 bg-red-50 text-red-600 text-xs rounded shadow-lg border border-red-100 z-[60]">
+                    {logoutError}
+                  </div>
+                )}
+              </div>
               <div className="size-9 rounded-full bg-stone-200 overflow-hidden border border-stone-200 dark:border-stone-600 cursor-pointer">
                 <img alt="User Profile" className="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCooRgWQXUK6jdIrdSYeqWjfVhT4B0FxuYni-tjM9KsX1cZKRV5fTBR9UrjqYKTqWnuvy1gxEU4T3T32MBXL4x7oP--xNRoGzlR_sdj6JplWyzuyVVtdPedCQ3k-TSA1LDYnssuJhZxtaKmPDNwzJe3yXkMbAyW0xEpTXlBfUkqYMB2RQ6O0EVdeanIJf1itIlcMo8zzIeL6xM7OMoE3KlTbLV2_2hGD4fVbVTrSZ3k0s3U9Cx0JyLyGiAWGTWqsY4fmqqn4RcdiKtb"/>
               </div>
@@ -421,5 +433,6 @@ export default function Dashboard() {
         </button>
       </main>
     </div>
+    </AuthGuard>
   );
 }
