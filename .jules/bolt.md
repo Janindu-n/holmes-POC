@@ -1,0 +1,3 @@
+## 2025-05-15 - Optimizing Scroll-Linked Animations
+**Learning:** React state-based scroll listeners (like `setScrollY(window.scrollY)`) trigger a component re-render on every scroll event, which is extremely inefficient for simple parallax effects. Bypassing the React render cycle via `useRef` and direct DOM manipulation within a `requestAnimationFrame` loop reduces re-renders to zero during scrolling.
+**Action:** Use `useRef` for elements targeted by high-frequency events (scroll, mousemove) and update their styles directly to maintain 60fps performance without unnecessary reconciliation.
