@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { auth } from '@/lib/firebase';
 import { signOut } from 'firebase/auth';
 import dynamic from 'next/dynamic';
+import AuthGuard from '@/components/AuthGuard';
 import { Job, JobStatus, JOB_STATUS_LABELS, JOB_STATUS_ORDER } from '@/types/job';
 
 const MuxPlayer = dynamic(() => import('@mux/mux-player-react'), {
@@ -61,6 +62,7 @@ export default function Dashboard() {
   const canShowStream = currentStatusIndex >= JOB_STATUS_ORDER.indexOf('started');
 
   return (
+    <AuthGuard>
     <div className="bg-dashboard-bg dark:bg-background-dark font-display text-stone-600 dark:text-stone-300 min-h-screen flex flex-col overflow-x-hidden transition-colors duration-200">
       {/* Navigation */}
       <nav className="sticky top-0 z-50 w-full bg-card-light/80 dark:bg-surface-dark/80 backdrop-blur-md border-b border-stone-200 dark:border-stone-700">
@@ -421,5 +423,6 @@ export default function Dashboard() {
         </button>
       </main>
     </div>
+    </AuthGuard>
   );
 }
