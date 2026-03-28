@@ -7,10 +7,13 @@ import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
 
+const ALLOWED_ROLES = ['client', 'specialist'];
+
 function RegisterForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const role = searchParams.get('role') || 'client';
+  const rawRole = searchParams.get('role');
+  const role = rawRole && ALLOWED_ROLES.includes(rawRole) ? rawRole : 'client';
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -37,8 +40,11 @@ function RegisterForm() {
       });
 
       router.push('/dashboard');
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Failed to create an account');
+    } catch {
+      // Log error for internal tracking (e.g. Sentry) but show generic message to user
+      // to avoid exposing internal Firebase or system details.
+      console.error('Registration error occurred');
+      setError('An error occurred while creating your account. Please try again.');
     } finally {
       setLoading(false);
     }
