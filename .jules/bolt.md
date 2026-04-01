@@ -1,0 +1,3 @@
+## 2025-05-14 - Optimized landing page scroll performance
+**Learning:** Using React state for high-frequency events like scrolling triggers excessive re-renders (20-40+ per scroll sequence), which can degrade performance on complex pages. Direct DOM manipulation with `requestAnimationFrame` and a "ticking" flag effectively bypasses the React reconciliation cycle for these animations. Removing CSS transitions (`transition-all`) is also necessary to prevent interpolation conflicts with manual JS updates.
+**Action:** Use `useRef` and `requestAnimationFrame` for scroll-linked animations. Ensure an initial synchronization call on mount to handle page refreshes or deep links.
