@@ -1,0 +1,3 @@
+## 2025-05-15 - Optimizing Scroll-Based Animations
+**Learning:** Tracking `window.scrollY` via React state (e.g., `useState`) in a root component like `page.tsx` causes the entire page to re-render on every scroll event, leading to significant performance degradation (dropped frames, high CPU usage). This is especially problematic for large pages with many child components.
+**Action:** Use `useRef` to target the specific element needing animation and perform direct DOM manipulation within a `requestAnimationFrame` loop inside `useEffect`. Always include `{ passive: true }` on scroll listeners and ensure `cancelAnimationFrame` is called on cleanup to prevent memory leaks and redundant processing.
