@@ -10,7 +10,8 @@ import { auth, db } from '@/lib/firebase';
 function RegisterForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const role = searchParams.get('role') || 'client';
+  const rawRole = searchParams.get('role');
+  const role = (rawRole === 'specialist' || rawRole === 'client') ? rawRole : 'client';
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -38,7 +39,9 @@ function RegisterForm() {
 
       router.push('/dashboard');
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Failed to create an account');
+      // Log full error for developers but show generic message to user to prevent info leakage
+      console.error('Registration error:', err);
+      setError('Failed to create an account. Please check your details and try again.');
     } finally {
       setLoading(false);
     }
