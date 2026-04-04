@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { auth } from '@/lib/firebase';
-import { signOut } from 'firebase/auth';
+import { signOut, onAuthStateChanged } from 'firebase/auth';
 import dynamic from 'next/dynamic';
 import { Job, JobStatus, JOB_STATUS_LABELS, JOB_STATUS_ORDER } from '@/types/job';
 
@@ -46,6 +46,21 @@ const STATUS_ICONS: Record<JobStatus, string> = {
 export default function Dashboard() {
   const router = useRouter();
   const [job] = useState<Job>(MOCK_JOB);
+  const [loading, setLoading] = useState(!!auth);
+
+  useEffect(() => {
+    if (!auth) return;
+
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        router.push('/auth/login');
+      } else {
+        setLoading(false);
+      }
+    });
+
+    return () => unsubscribe();
+  }, [router]);
 
   const handleLogout = async () => {
     try {
@@ -59,6 +74,19 @@ export default function Dashboard() {
   const currentStatusIndex = JOB_STATUS_ORDER.indexOf(job.status);
 
   const canShowStream = currentStatusIndex >= JOB_STATUS_ORDER.indexOf('started');
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-dashboard-bg dark:bg-background-dark flex items-center justify-center">
+        <div className="text-center">
+          <span className="material-symbols-outlined text-primary text-5xl animate-spin mb-4">
+            progress_activity
+          </span>
+          <p className="text-stone-600 dark:text-stone-300 font-medium">Verifying access...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-dashboard-bg dark:bg-background-dark font-display text-stone-600 dark:text-stone-300 min-h-screen flex flex-col overflow-x-hidden transition-colors duration-200">
