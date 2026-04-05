@@ -21,7 +21,9 @@ export default function Login() {
     try {
       await signInWithEmailAndPassword(auth, email, password);
       router.push('/dashboard');
-    } catch {
+    } catch (err: unknown) {
+      // Use generic error message to prevent information leakage
+      console.error('Login error:', err);
       setError('Invalid email or password');
     } finally {
       setLoading(false);
