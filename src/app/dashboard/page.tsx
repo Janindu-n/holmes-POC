@@ -13,11 +13,10 @@ import SpecialistDashboard from '@/components/dashboards/SpecialistDashboard';
 export default function Dashboard() {
   const router = useRouter();
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!!auth);
 
   useEffect(() => {
     if (!auth) {
-      setLoading(false);
       return;
     }
 
