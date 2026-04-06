@@ -1,21 +1,44 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import Link from 'next/link';
 
 export default function Home() {
-  const [scrollY, setScrollY] = useState(0);
+  const heroRef = useRef<HTMLDivElement>(null);
+  const ticking = useRef(false);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrollY(window.scrollY);
+    /**
+     * BOLT PERFORMANCE OPTIMIZATION:
+     * Using direct DOM manipulation for scroll-linked animations instead of React state
+     * to avoid triggering a full component re-render on every scroll pixel.
+     *
+     * 1. ticking flag + requestAnimationFrame: Throttles updates to match the browser's
+     *    refresh rate (usually 60fps), preventing "scroll jank".
+     * 2. passive: true: Signals to the browser that we won't call preventDefault(),
+     *    allowing the browser to scroll the page immediately without waiting for the JS.
+     */
+    const updateParallax = () => {
+      const scrollY = window.scrollY;
+      if (heroRef.current) {
+        const opacity = Math.max(1 - scrollY / 400, 0);
+        const translateY = scrollY / 3;
+        heroRef.current.style.opacity = opacity.toString();
+        heroRef.current.style.transform = `translateY(${translateY}px)`;
+      }
+      ticking.current = false;
     };
-    window.addEventListener('scroll', handleScroll);
+
+    const handleScroll = () => {
+      if (!ticking.current) {
+        requestAnimationFrame(updateParallax);
+        ticking.current = true;
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-
-  const opacity = Math.max(1 - scrollY / 400, 0);
-  const translateY = scrollY / 3;
 
   return (
     <div className="bg-background-light dark:bg-background-dark text-stone-900 dark:text-white font-display min-h-screen">
@@ -49,10 +72,16 @@ export default function Home() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-8 items-center">
             <div
-              className="flex flex-col gap-6 text-left max-w-2xl transition-all duration-75"
+              ref={heroRef}
+              /*
+                BOLT PERFORMANCE OPTIMIZATION:
+                - Removed transition-all duration-75 to prevent conflict with direct JS animation.
+                - will-change-[transform,opacity] promotes element to GPU layer.
+              */
+              className="flex flex-col gap-6 text-left max-w-2xl will-change-[transform,opacity]"
               style={{
-                opacity: opacity,
-                transform: `translateY(${translateY}px)`
+                opacity: 1,
+                transform: `translateY(0px)`
               }}
             >
               <div className="inline-flex w-fit items-center gap-2 rounded-full border border-orange-200 bg-orange-50 px-3 py-1 text-xs font-semibold text-orange-800 dark:border-orange-900 dark:bg-orange-900/30 dark:text-orange-300">
