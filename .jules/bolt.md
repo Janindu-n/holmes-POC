@@ -1,0 +1,3 @@
+## 2025-05-14 - Optimized landing page scroll performance and image loading
+**Learning:** High-frequency scroll animations using React state (`useState`) cause excessive re-renders (one per scroll frame), leading to main-thread congestion. Converting these to `useRef` + `requestAnimationFrame` with a ticking flag reduces re-renders to zero. Additionally, CSS `backgroundImage` prevents native browser lazy-loading; converting to `<img>` tags with `loading="lazy"` and `decoding="async"` significantly improves initial load performance.
+**Action:** Always prefer direct DOM manipulation via refs and RAF for scroll-linked animations. Convert below-the-fold background images to native `<img>` tags to leverage `loading="lazy"`.
