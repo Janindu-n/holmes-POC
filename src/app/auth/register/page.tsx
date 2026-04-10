@@ -10,7 +10,10 @@ import { auth, db } from '@/lib/firebase';
 function RegisterForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const role = searchParams.get('role') || 'client';
+
+  // Validate role to prevent privilege escalation via URL manipulation
+  const queryRole = searchParams.get('role');
+  const role = (queryRole === 'client' || queryRole === 'specialist') ? queryRole : 'client';
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
