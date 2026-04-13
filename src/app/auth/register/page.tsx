@@ -7,10 +7,14 @@ import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
 
+const ALLOWED_ROLES = ['client', 'specialist'];
+
 function RegisterForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const role = searchParams.get('role') || 'client';
+  // Sentinel: Validate role from query parameter to prevent privilege escalation
+  const rawRole = searchParams.get('role');
+  const role = rawRole && ALLOWED_ROLES.includes(rawRole) ? rawRole : 'client';
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -38,7 +42,9 @@ function RegisterForm() {
 
       router.push('/dashboard');
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Failed to create an account');
+      // Sentinel: Log details for developers but show generic message to users to prevent information leakage
+      console.error('Registration error:', err);
+      setError('An error occurred during registration. Please try again.');
     } finally {
       setLoading(false);
     }
