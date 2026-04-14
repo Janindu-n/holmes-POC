@@ -1,21 +1,39 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import Link from 'next/link';
 
 export default function Home() {
-  const [scrollY, setScrollY] = useState(0);
+  // Optimization: use useRef instead of useState for scroll position to prevent re-renders
+  const heroRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrollY(window.scrollY);
+    let ticking = false;
+
+    const updateParallax = () => {
+      const scrollPos = window.scrollY;
+      if (heroRef.current) {
+        const opacity = Math.max(1 - scrollPos / 400, 0);
+        const translateY = scrollPos / 3;
+        heroRef.current.style.opacity = opacity.toString();
+        heroRef.current.style.transform = `translateY(${translateY}px)`;
+      }
+      ticking = false;
     };
-    window.addEventListener('scroll', handleScroll);
+
+    const handleScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(updateParallax);
+        ticking = true;
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    // Initial call to set positions
+    updateParallax();
+
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-
-  const opacity = Math.max(1 - scrollY / 400, 0);
-  const translateY = scrollY / 3;
 
   return (
     <div className="bg-background-light dark:bg-background-dark text-stone-900 dark:text-white font-display min-h-screen">
@@ -49,10 +67,10 @@ export default function Home() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-8 items-center">
             <div
-              className="flex flex-col gap-6 text-left max-w-2xl transition-all duration-75"
+              ref={heroRef}
+              className="flex flex-col gap-6 text-left max-w-2xl"
               style={{
-                opacity: opacity,
-                transform: `translateY(${translateY}px)`
+                willChange: 'transform, opacity'
               }}
             >
               <div className="inline-flex w-fit items-center gap-2 rounded-full border border-orange-200 bg-orange-50 px-3 py-1 text-xs font-semibold text-orange-800 dark:border-orange-900 dark:bg-orange-900/30 dark:text-orange-300">
@@ -81,9 +99,9 @@ export default function Home() {
               </div>
               <div className="mt-6 flex items-center gap-4 text-sm font-medium text-stone-500 dark:text-stone-500">
                 <div className="flex -space-x-2 overflow-hidden">
-                  <img alt="User avatar" className="inline-block h-8 w-8 rounded-full ring-2 ring-white dark:ring-background-dark" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDrt9yYXivDBlPnWe1CnnximQpeX9_gmPGHfbCSpZE3WnwygfHP3zswm8S22tAangG_oYzGYSrC70Yapu28xcBu8qYKtJlG2eFRtTUKzdi8oS824aD8bFUskFgHU88eyVeZ-AkLW8KaCZCp2SBm5-1WjLb_vzracB91IevIjeX5IJjj_IQA28b_yEYROqBEbk6I6dntIgsPSw5rbpEwvKl3b1PRSNJ5WQNXzv6o-ccMfnGjJJtRgoMh1Fc7LskPTeWjA8nJfa_llkF3"/>
-                  <img alt="User avatar" className="inline-block h-8 w-8 rounded-full ring-2 ring-white dark:ring-background-dark" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBGbCaDz0G2OAuYEH9krDXOcEiKqNpU5kyZn0NEis0kGJ8RfpQNRUK4QaZAv0M7CU3xhcV_g52vFCsGrIYdFOQC7ac2niPePzu4CvI-JJVvZsgEyCTy5iIhnpOezI-E2PsNyuDd42fzmo1TafpoMmJGZZKS7Qh_MSMGYKDQeBgX8_Wn4mGNPcOJTBuWSnR9ofPcW6d6lSwb4wMVRfRof93wEJl_YV5t106E8SQYtv8p-Zyepgo_5cjwPq22SNLSnibVpdpt9nJGRZPk"/>
-                  <img alt="User avatar" className="inline-block h-8 w-8 rounded-full ring-2 ring-white dark:ring-background-dark" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC_2ZyKS3GLe1PxowifBFBGUHjlsfNDoQ6ZyVoYR789da-7TBYb1yxigLP0p-aTCoplasmGi_pPXA9X5gV_4qaYYI4WP8WSDv-pUiUNg31Wu-ATLasTqgbiXaQEukE4JrdFk1CWHuVG969xEurNRjwmu4dgKuaQtERdc6k6hOmTGjfMd_DVutZ218cY8cAYnSCNKiQiPXi9jCHTKS1mHJ0R3imjn88QNtkP2QhVt-mblu8GG8ytKXlamQVa2Zb08pADs8ilK_qrIOYR"/>
+                  <img alt="User avatar" loading="lazy" decoding="async" className="inline-block h-8 w-8 rounded-full ring-2 ring-white dark:ring-background-dark" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDrt9yYXivDBlPnWe1CnnximQpeX9_gmPGHfbCSpZE3WnwygfHP3zswm8S22tAangG_oYzGYSrC70Yapu28xcBu8qYKtJlG2eFRtTUKzdi8oS824aD8bFUskFgHU88eyVeZ-AkLW8KaCZCp2SBm5-1WjLb_vzracB91IevIjeX5IJjj_IQA28b_yEYROqBEbk6I6dntIgsPSw5rbpEwvKl3b1PRSNJ5WQNXzv6o-ccMfnGjJJtRgoMh1Fc7LskPTeWjA8nJfa_llkF3"/>
+                  <img alt="User avatar" loading="lazy" decoding="async" className="inline-block h-8 w-8 rounded-full ring-2 ring-white dark:ring-background-dark" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBGbCaDz0G2OAuYEH9krDXOcEiKqNpU5kyZn0NEis0kGJ8RfpQNRUK4QaZAv0M7CU3xhcV_g52vFCsGrIYdFOQC7ac2niPePzu4CvI-JJVvZsgEyCTy5iIhnpOezI-E2PsNyuDd42fzmo1TafpoMmJGZZKS7Qh_MSMGYKDQeBgX8_Wn4mGNPcOJTBuWSnR9ofPcW6d6lSwb4wMVRfRof93wEJl_YV5t106E8SQYtv8p-Zyepgo_5cjwPq22SNLSnibVpdpt9nJGRZPk"/>
+                  <img alt="User avatar" loading="lazy" decoding="async" className="inline-block h-8 w-8 rounded-full ring-2 ring-white dark:ring-background-dark" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC_2ZyKS3GLe1PxowifBFBGUHjlsfNDoQ6ZyVoYR789da-7TBYb1yxigLP0p-aTCoplasmGi_pPXA9X5gV_4qaYYI4WP8WSDv-pUiUNg31Wu-ATLasTqgbiXaQEukE4JrdFk1CWHuVG969xEurNRjwmu4dgKuaQtERdc6k6hOmTGjfMd_DVutZ218cY8cAYnSCNKiQiPXi9jCHTKS1mHJ0R3imjn88QNtkP2QhVt-mblu8GG8ytKXlamQVa2Zb08pADs8ilK_qrIOYR"/>
                 </div>
                 <p>Trusted by 500+ homeowners</p>
               </div>
@@ -97,7 +115,13 @@ export default function Home() {
                 </div>
                 <p className="text-sm opacity-90">Live Feed • Living Room Cam 01</p>
               </div>
-              <div className="w-full h-full bg-cover bg-center" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuAhqwGi8qZnZJogTGOJhYA_q8LMWQ3U5KTHBOQrqDWGqfr0RKCAKqhs1l7DboBNoFaf8JDCVP2YADK-y5_I0uf4-uw5yIs79ztpnj2P7rbk3ejhw8KeIQPDlORl0vKjQEV3GFiEvqu69AnJCdyKB1tOps-OD302PJKeua8rZVyawkwMaTd710XDLKCT_-jlBwLRuJFW5LeWD_a1U-vk9PVGnzbuyT-vRIIV_l-_lem6KDCOpd0alpx9xg2GhooSk9RNq1qTVlPR719X')" }}></div>
+              <img
+                alt="Living Room Cam"
+                loading="lazy"
+                decoding="async"
+                className="w-full h-full object-cover"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuAhqwGi8qZnZJogTGOJhYA_q8LMWQ3U5KTHBOQrqDWGqfr0RKCAKqhs1l7DboBNoFaf8JDCVP2YADK-y5_I0uf4-uw5yIs79ztpnj2P7rbk3ejhw8KeIQPDlORl0vKjQEV3GFiEvqu69AnJCdyKB1tOps-OD302PJKeua8rZVyawkwMaTd710XDLKCT_-jlBwLRuJFW5LeWD_a1U-vk9PVGnzbuyT-vRIIV_l-_lem6KDCOpd0alpx9xg2GhooSk9RNq1qTVlPR719X"
+              />
             </div>
           </div>
         </div>
@@ -170,12 +194,44 @@ export default function Home() {
             <div className="order-2 lg:order-1">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-4">
-                  <div className="w-full aspect-[3/4] rounded-2xl bg-cover bg-center shadow-lg" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuBBCBsjDW83osSTXyE4F3GDRIphisU5xVkNgv6AN3Z9CThkBwBB4_0JuDDKHZoU4ZutqwWwhsu4BNXym-hSH66Lx2i-kGXlpBJwfc64Y-0E2ZNHzTPjrKopOneeXhAsgrdUUt0_ZfX1Qga01zMln6SnYNyKaDRQPqMvDXEqOtPQlheaTEGcMaRANo1u9FG5aArlJ8uLmCp4fzjcGTvEx8yDAVF9ZJmO9WQ7YIZEHYYBjCV8f-7_GL1pRkuImbfTiUUiXAQ-KIHm3lGD')" }}></div>
-                  <div className="w-full aspect-square rounded-2xl bg-cover bg-center shadow-lg" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuDLnsJ25r8niw5gZpo01T4kCCGQpw_QjLc3DNqZ3jVoqpVto6aJwSJ1njVmyFRY4lKpCxlORy7gBBk4Q_OhqkGAMkCIu56QwPVDAfE5p2JRDcc84s3bvoL1n5ECJB-OYPdPRy5j7bEGi1OoduxVPAGLfDcuzSMnT-mfNmU2rZgqkA4tc_MFhZshcFzynEcNWgH-7ZE2RC-Wepm90oSyPALI-UKOsZuNyE6mMNdE51qPIhT7LQLPYQWQCQN3JZGDyjTZLuDulE1LAxuG')" }}></div>
+                  <div className="w-full aspect-[3/4] rounded-2xl overflow-hidden shadow-lg">
+                    <img
+                      alt="Property 1"
+                      loading="lazy"
+                      decoding="async"
+                      className="w-full h-full object-cover"
+                      src="https://lh3.googleusercontent.com/aida-public/AB6AXuBBCBsjDW83osSTXyE4F3GDRIphisU5xVkNgv6AN3Z9CThkBwBB4_0JuDDKHZoU4ZutqwWwhsu4BNXym-hSH66Lx2i-kGXlpBJwfc64Y-0E2ZNHzTPjrKopOneeXhAsgrdUUt0_ZfX1Qga01zMln6SnYNyKaDRQPqMvDXEqOtPQlheaTEGcMaRANo1u9FG5aArlJ8uLmCp4fzjcGTvEx8yDAVF9ZJmO9WQ7YIZEHYYBjCV8f-7_GL1pRkuImbfTiUUiXAQ-KIHm3lGD"
+                    />
+                  </div>
+                  <div className="w-full aspect-square rounded-2xl overflow-hidden shadow-lg">
+                    <img
+                      alt="Property 2"
+                      loading="lazy"
+                      decoding="async"
+                      className="w-full h-full object-cover"
+                      src="https://lh3.googleusercontent.com/aida-public/AB6AXuDLnsJ25r8niw5gZpo01T4kCCGQpw_QjLc3DNqZ3jVoqpVto6aJwSJ1njVmyFRY4lKpCxlORy7gBBk4Q_OhqkGAMkCIu56QwPVDAfE5p2JRDcc84s3bvoL1n5ECJB-OYPdPRy5j7bEGi1OoduxVPAGLfDcuzSMnT-mfNmU2rZgqkA4tc_MFhZshcFzynEcNWgH-7ZE2RC-Wepm90oSyPALI-UKOsZuNyE6mMNdE51qPIhT7LQLPYQWQCQN3JZGDyjTZLuDulE1LAxuG"
+                    />
+                  </div>
                 </div>
                 <div className="space-y-4 pt-12">
-                  <div className="w-full aspect-square rounded-2xl bg-cover bg-center shadow-lg" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuAe09Tw9NWs7XB-N10l7nOfjNQRngl_QWas5gSks-WnI-NjE4E64CER8iSRamfzLO5DlttlikbNWJMBBMQEey1nsDP2aFJPAXYJiBVFMR4NCRVL8AGWGeZU3Ma3Ol9JfzsihXi_-3u-XifkYCS5lBhkJhFqrpUPJjnkmgNn1xupCLA0nBdufU6nZqRytvoh6KIX-XMM8xErFJHEeQ3pXIs4ubRIsHtColI0xHRmgEzeM3qzkXUQ3qZiar9B8JCgeb8dB57ctHVOiZeA')" }}></div>
-                  <div className="w-full aspect-[3/4] rounded-2xl bg-cover bg-center shadow-lg" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuDAzR2VvHq0ALOSYjWneSGW5VFLhRP3Y6_Qh497dhPEdY93SCs3rLog2E_J1aDkE7Jco-PlaIjTtJs9B5SGYVNcHaDiuCVT_MtN9IZ61bnqCZBEuT79S-G9tnk9pqQ8aziw1egoeYuvcdxY2APuFJuDMs1CSB0Zkr35HZARVQz797zOhDHKPZkrcOE1Xq0aRFENspeVe3pNLB_24CbKK0JeZtripyE5eJQf0wxY97F0Z-JRkzD3vm4XbuIvWNrdpNGhtKXPSAqHPYyr')" }}></div>
+                  <div className="w-full aspect-square rounded-2xl overflow-hidden shadow-lg">
+                    <img
+                      alt="Property 3"
+                      loading="lazy"
+                      decoding="async"
+                      className="w-full h-full object-cover"
+                      src="https://lh3.googleusercontent.com/aida-public/AB6AXuAe09Tw9NWs7XB-N10l7nOfjNQRngl_QWas5gSks-WnI-NjE4E64CER8iSRamfzLO5DlttlikbNWJMBBMQEey1nsDP2aFJPAXYJiBVFMR4NCRVL8AGWGeZU3Ma3Ol9JfzsihXi_-3u-XifkYCS5lBhkJhFqrpUPJjnkmgNn1xupCLA0nBdufU6nZqRytvoh6KIX-XMM8xErFJHEeQ3pXIs4ubRIsHtColI0xHRmgEzeM3qzkXUQ3qZiar9B8JCgeb8dB57ctHVOiZeA"
+                    />
+                  </div>
+                  <div className="w-full aspect-[3/4] rounded-2xl overflow-hidden shadow-lg">
+                    <img
+                      alt="Property 4"
+                      loading="lazy"
+                      decoding="async"
+                      className="w-full h-full object-cover"
+                      src="https://lh3.googleusercontent.com/aida-public/AB6AXuDAzR2VvHq0ALOSYjWneSGW5VFLhRP3Y6_Qh497dhPEdY93SCs3rLog2E_J1aDkE7Jco-PlaIjTtJs9B5SGYVNcHaDiuCVT_MtN9IZ61bnqCZBEuT79S-G9tnk9pqQ8aziw1egoeYuvcdxY2APuFJuDMs1CSB0Zkr35HZARVQz797zOhDHKPZkrcOE1Xq0aRFENspeVe3pNLB_24CbKK0JeZtripyE5eJQf0wxY97F0Z-JRkzD3vm4XbuIvWNrdpNGhtKXPSAqHPYyr"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
@@ -232,7 +288,7 @@ export default function Home() {
           </h2>
           <div className="mt-8 flex flex-col items-center justify-center gap-2">
             <div className="size-12 overflow-hidden rounded-full bg-stone-200">
-              <img alt="Customer Avatar" className="h-full w-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuASsRqylbw-D4F7Rqt0AMKPTIBRASKQ0J9o24VlmGnMYE7MOP7ibHKmGIpgJjt7TX70Pqxu0A_MvHAskLl5MtveI5whEhbgJVfAFLHam-qx1Dh4wP_jn-xxqI-7yjPV5ih8VG355rR69CQqWtaIHhZIKg1sdXETfI49qE2iKbk-8XVzkYcXUrPyVqkrc943kSompL9J1rroSmCioTVNKs7QMzRUqGKb3WM3v_0Av64H3_X1jp7Vb0WGRlUoDRkPZxw-Khjiiii0gApF"/>
+              <img alt="Customer Avatar" loading="lazy" decoding="async" className="h-full w-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuASsRqylbw-D4F7Rqt0AMKPTIBRASKQ0J9o24VlmGnMYE7MOP7ibHKmGIpgJjt7TX70Pqxu0A_MvHAskLl5MtveI5whEhbgJVfAFLHam-qx1Dh4wP_jn-xxqI-7yjPV5ih8VG355rR69CQqWtaIHhZIKg1sdXETfI49qE2iKbk-8XVzkYcXUrPyVqkrc943kSompL9J1rroSmCioTVNKs7QMzRUqGKb3WM3v_0Av64H3_X1jp7Vb0WGRlUoDRkPZxw-Khjiiii0gApF"/>
             </div>
             <div className="text-base font-semibold text-stone-900 dark:text-white">Aruni P.</div>
             <div className="text-sm text-stone-500">Property Owner, Melbourne</div>
