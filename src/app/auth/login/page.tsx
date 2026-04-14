@@ -19,6 +19,9 @@ export default function Login() {
     setError('');
 
     try {
+      if (!auth) {
+        throw new Error('Authentication system is not available');
+      }
       await signInWithEmailAndPassword(auth, email, password);
       router.push('/dashboard');
     } catch {

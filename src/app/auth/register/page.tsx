@@ -7,10 +7,15 @@ import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
 
+const ALLOWED_ROLES = ['client', 'specialist'];
+
 function RegisterForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const role = searchParams.get('role') || 'client';
+
+  // SECURITY: Validate role parameter from URL to prevent privilege escalation or invalid data
+  const queryRole = searchParams.get('role');
+  const role = queryRole && ALLOWED_ROLES.includes(queryRole) ? queryRole : 'client';
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -24,6 +29,9 @@ function RegisterForm() {
     setError('');
 
     try {
+      if (!auth || !db) {
+        throw new Error('Database or Authentication system is not available');
+      }
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       await updateProfile(userCredential.user, { displayName: name });
 
