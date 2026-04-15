@@ -19,6 +19,9 @@ export default function Login() {
     setError('');
 
     try {
+      if (!auth) {
+        throw new Error('Service uninitialized. Please try again later.');
+      }
       await signInWithEmailAndPassword(auth, email, password);
       router.push('/dashboard');
     } catch {

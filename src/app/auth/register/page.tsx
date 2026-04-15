@@ -7,10 +7,13 @@ import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
 
+const ALLOWED_ROLES = ['client', 'specialist'];
+
 function RegisterForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const role = searchParams.get('role') || 'client';
+  const roleParam = searchParams.get('role');
+  const role = roleParam && ALLOWED_ROLES.includes(roleParam) ? roleParam : 'client';
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -24,6 +27,9 @@ function RegisterForm() {
     setError('');
 
     try {
+      if (!auth || !db) {
+        throw new Error('Service uninitialized. Please try again later.');
+      }
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       await updateProfile(userCredential.user, { displayName: name });
 
