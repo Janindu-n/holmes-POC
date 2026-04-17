@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { auth } from '@/lib/firebase';
-import { signOut } from 'firebase/auth';
+import { auth, db } from '@/lib/firebase';
+import { signOut, onAuthStateChanged } from 'firebase/auth';
 import dynamic from 'next/dynamic';
 import { Job, JobStatus, JOB_STATUS_LABELS, JOB_STATUS_ORDER } from '@/types/job';
 
@@ -46,6 +46,22 @@ const STATUS_ICONS: Record<JobStatus, string> = {
 export default function Dashboard() {
   const router = useRouter();
   const [job] = useState<Job>(MOCK_JOB);
+  const [loading, setLoading] = useState(!!auth);
+
+  useEffect(() => {
+    if (!auth) return;
+
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        // Use replace instead of push to avoid back-button loops
+        router.replace('/auth/login');
+      } else {
+        setLoading(false);
+      }
+    });
+
+    return () => unsubscribe();
+  }, [router]);
 
   const handleLogout = async () => {
     try {
@@ -59,6 +75,40 @@ export default function Dashboard() {
   const currentStatusIndex = JOB_STATUS_ORDER.indexOf(job.status);
 
   const canShowStream = currentStatusIndex >= JOB_STATUS_ORDER.indexOf('started');
+
+  if (!auth || !db) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-dashboard-bg dark:bg-background-dark font-display">
+        <div className="flex flex-col items-center gap-4 text-center p-8 bg-white dark:bg-surface-dark rounded-2xl shadow-xl border border-stone-200 dark:border-stone-700">
+          <div className="flex items-center justify-center size-12 bg-red-50 dark:bg-red-900/20 rounded-xl text-red-500 mb-2">
+            <span className="material-symbols-outlined text-3xl">error</span>
+          </div>
+          <h2 className="text-xl font-bold text-stone-800 dark:text-white">Service Unavailable</h2>
+          <p className="text-stone-500 dark:text-stone-400 max-w-xs">Service uninitialized. Please try again later.</p>
+          <button
+            onClick={() => router.push('/')}
+            className="mt-2 px-6 py-2 bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-700 dark:text-stone-300 rounded-lg font-bold transition-all"
+          >
+            Back to Home
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-dashboard-bg dark:bg-background-dark font-display">
+        <div className="flex flex-col items-center gap-4 text-center p-8">
+          <div className="flex items-center justify-center size-12 bg-primary/10 rounded-xl text-primary animate-pulse mb-2">
+            <span className="material-symbols-outlined text-3xl animate-spin">progress_activity</span>
+          </div>
+          <h2 className="text-xl font-bold text-stone-800 dark:text-white">Verifying access...</h2>
+          <p className="text-stone-500 dark:text-stone-400 max-w-xs">Please wait while we secure your connection.</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-dashboard-bg dark:bg-background-dark font-display text-stone-600 dark:text-stone-300 min-h-screen flex flex-col overflow-x-hidden transition-colors duration-200">
