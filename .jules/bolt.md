@@ -1,0 +1,3 @@
+## 2026-04-18 - Scroll Parallax Optimization
+**Learning:** High-frequency UI updates (like parallax) driven by React state (`useState`) cause excessive re-renders (approx 20 per 1000px scroll), leading to high CPU usage. Additionally, existing CSS transitions (`transition-all`) on the same element compete with JavaScript-driven updates, causing visual "jank" as the browser tries to interpolate between frames.
+**Action:** Use `useRef` and `requestAnimationFrame` for direct DOM manipulation to bypass the React render cycle for high-frequency updates. Always remove CSS transition classes from elements being animated directly via JavaScript to ensure smooth frame delivery.
