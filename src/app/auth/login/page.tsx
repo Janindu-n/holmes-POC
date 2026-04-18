@@ -15,6 +15,10 @@ export default function Login() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!auth) {
+      setError('Authentication service is unavailable. Please try again later.');
+      return;
+    }
     setLoading(true);
     setError('');
 
