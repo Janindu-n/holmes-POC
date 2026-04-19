@@ -17,7 +17,6 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (!auth) {
-      setLoading(false);
       return;
     }
 
