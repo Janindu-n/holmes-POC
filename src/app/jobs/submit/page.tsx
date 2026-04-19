@@ -22,7 +22,6 @@ export default function SubmitJob() {
 
   useEffect(() => {
     if (!auth) {
-      setLoading(false);
       return;
     }
 

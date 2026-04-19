@@ -18,7 +18,6 @@ export default function JobsPage() {
 
   useEffect(() => {
     if (!auth) {
-      setLoading(false);
       return;
     }
 
