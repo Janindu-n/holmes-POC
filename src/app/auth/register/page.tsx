@@ -7,10 +7,14 @@ import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
 
+const ALLOWED_ROLES = ['client', 'specialist'];
+
 function RegisterForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const role = searchParams.get('role') || 'client';
+  const role = ALLOWED_ROLES.includes(searchParams.get('role') || '')
+    ? (searchParams.get('role') as string)
+    : 'client';
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
