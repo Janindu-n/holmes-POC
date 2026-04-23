@@ -18,10 +18,17 @@ export default function Login() {
     setLoading(true);
     setError('');
 
+    if (!auth) {
+      setError('Service uninitialized. Please try again later.');
+      setLoading(false);
+      return;
+    }
+
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      router.push('/dashboard');
-    } catch {
+      router.replace('/dashboard');
+    } catch (err: unknown) {
+      console.error('Login error:', err);
       setError('Invalid email or password');
     } finally {
       setLoading(false);
