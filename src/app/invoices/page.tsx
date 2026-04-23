@@ -11,11 +11,11 @@ import Navbar from '@/components/Navbar';
 export default function InvoicesPage() {
   const router = useRouter();
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
-  const [loading, setLoading] = useState(true);
+  // Initialize loading based on whether auth service is available
+  const [loading, setLoading] = useState(auth !== null);
 
   useEffect(() => {
     if (!auth) {
-      setLoading(false);
       return;
     }
 

@@ -9,8 +9,6 @@ import {
   updateDoc,
   collection,
   addDoc,
-  query,
-  where,
   onSnapshot
 } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
@@ -101,8 +99,8 @@ export default function JobDetails({ params }: { params: Promise<{ id: string }>
           currentSpecialist: userProfile.name
         } : {})
       });
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'An unknown error occurred');
     } finally {
       setActionLoading(false);
     }
@@ -151,8 +149,8 @@ export default function JobDetails({ params }: { params: Promise<{ id: string }>
 
       setQuotePrice('');
       setQuoteDesc('');
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'An unknown error occurred');
     } finally {
       setActionLoading(false);
     }
@@ -164,8 +162,8 @@ export default function JobDetails({ params }: { params: Promise<{ id: string }>
       await updateDoc(doc(db!, 'jobs', id), {
         isStreaming: !job.isStreaming
       });
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'An unknown error occurred');
     }
   };
 
@@ -197,8 +195,8 @@ export default function JobDetails({ params }: { params: Promise<{ id: string }>
         timeline: updatedTimeline,
         ...(action === 'rejected' ? { quotationId: null } : {})
       });
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'An unknown error occurred');
     } finally {
       setActionLoading(false);
     }
@@ -241,8 +239,8 @@ export default function JobDetails({ params }: { params: Promise<{ id: string }>
         timelineDisplayStatus: 'Job Picked Up',
         timeline: updatedTimeline
       });
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'An unknown error occurred');
     } finally {
       setActionLoading(false);
     }
