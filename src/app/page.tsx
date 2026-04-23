@@ -1,21 +1,41 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import Link from 'next/link';
 
 export default function Home() {
-  const [scrollY, setScrollY] = useState(0);
+  const parallaxRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrollY(window.scrollY);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+    let ticking = false;
 
-  const opacity = Math.max(1 - scrollY / 400, 0);
-  const translateY = scrollY / 3;
+    // Performance Optimization: Use direct DOM manipulation for scroll-linked animations
+    // to bypass React's render cycle and avoid hundreds of re-renders during scroll.
+    const updateParallax = () => {
+      if (parallaxRef.current) {
+        const scrollY = window.scrollY;
+        const opacity = Math.max(1 - scrollY / 400, 0);
+        const translateY = scrollY / 3;
+
+        parallaxRef.current.style.opacity = opacity.toString();
+        parallaxRef.current.style.transform = `translateY(${translateY}px)`;
+      }
+      ticking = false;
+    };
+
+    const onScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(updateParallax);
+        ticking = true;
+      }
+    };
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    // Initial update to match current scroll position on mount/refresh
+    updateParallax();
+
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   return (
     <div className="bg-background-light dark:bg-background-dark text-stone-900 dark:text-white font-display min-h-screen">
@@ -49,11 +69,8 @@ export default function Home() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-8 items-center">
             <div
+              ref={parallaxRef}
               className="flex flex-col gap-6 text-left max-w-2xl transition-all duration-75"
-              style={{
-                opacity: opacity,
-                transform: `translateY(${translateY}px)`
-              }}
             >
               <div className="inline-flex w-fit items-center gap-2 rounded-full border border-orange-200 bg-orange-50 px-3 py-1 text-xs font-semibold text-orange-800 dark:border-orange-900 dark:bg-orange-900/30 dark:text-orange-300">
                 <span className="relative flex h-2 w-2">
@@ -97,7 +114,14 @@ export default function Home() {
                 </div>
                 <p className="text-sm opacity-90">Live Feed • Living Room Cam 01</p>
               </div>
-              <div className="w-full h-full bg-cover bg-center" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuAhqwGi8qZnZJogTGOJhYA_q8LMWQ3U5KTHBOQrqDWGqfr0RKCAKqhs1l7DboBNoFaf8JDCVP2YADK-y5_I0uf4-uw5yIs79ztpnj2P7rbk3ejhw8KeIQPDlORl0vKjQEV3GFiEvqu69AnJCdyKB1tOps-OD302PJKeua8rZVyawkwMaTd710XDLKCT_-jlBwLRuJFW5LeWD_a1U-vk9PVGnzbuyT-vRIIV_l-_lem6KDCOpd0alpx9xg2GhooSk9RNq1qTVlPR719X')" }}></div>
+              {/* Performance Optimization: Use native <img> with decoding="async" for critical hero assets.
+                  Images used as background-image are invisible to the browser's preload scanner. */}
+              <img
+                alt="Living room with smart security integration"
+                className="w-full h-full object-cover object-center"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuAhqwGi8qZnZJogTGOJhYA_q8LMWQ3U5KTHBOQrqDWGqfr0RKCAKqhs1l7DboBNoFaf8JDCVP2YADK-y5_I0uf4-uw5yIs79ztpnj2P7rbk3ejhw8KeIQPDlORl0vKjQEV3GFiEvqu69AnJCdyKB1tOps-OD302PJKeua8rZVyawkwMaTd710XDLKCT_-jlBwLRuJFW5LeWD_a1U-vk9PVGnzbuyT-vRIIV_l-_lem6KDCOpd0alpx9xg2GhooSk9RNq1qTVlPR719X"
+                decoding="async"
+              />
             </div>
           </div>
         </div>
@@ -170,12 +194,33 @@ export default function Home() {
             <div className="order-2 lg:order-1">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-4">
-                  <div className="w-full aspect-[3/4] rounded-2xl bg-cover bg-center shadow-lg" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuBBCBsjDW83osSTXyE4F3GDRIphisU5xVkNgv6AN3Z9CThkBwBB4_0JuDDKHZoU4ZutqwWwhsu4BNXym-hSH66Lx2i-kGXlpBJwfc64Y-0E2ZNHzTPjrKopOneeXhAsgrdUUt0_ZfX1Qga01zMln6SnYNyKaDRQPqMvDXEqOtPQlheaTEGcMaRANo1u9FG5aArlJ8uLmCp4fzjcGTvEx8yDAVF9ZJmO9WQ7YIZEHYYBjCV8f-7_GL1pRkuImbfTiUUiXAQ-KIHm3lGD')" }}></div>
-                  <div className="w-full aspect-square rounded-2xl bg-cover bg-center shadow-lg" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuDLnsJ25r8niw5gZpo01T4kCCGQpw_QjLc3DNqZ3jVoqpVto6aJwSJ1njVmyFRY4lKpCxlORy7gBBk4Q_OhqkGAMkCIu56QwPVDAfE5p2JRDcc84s3bvoL1n5ECJB-OYPdPRy5j7bEGi1OoduxVPAGLfDcuzSMnT-mfNmU2rZgqkA4tc_MFhZshcFzynEcNWgH-7ZE2RC-Wepm90oSyPALI-UKOsZuNyE6mMNdE51qPIhT7LQLPYQWQCQN3JZGDyjTZLuDulE1LAxuG')" }}></div>
+                  {/* Performance Optimization: Use loading="lazy" for images below the fold. */}
+                  <img
+                    alt="Home maintenance professional"
+                    className="w-full aspect-[3/4] rounded-2xl object-cover object-center shadow-lg"
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuBBCBsjDW83osSTXyE4F3GDRIphisU5xVkNgv6AN3Z9CThkBwBB4_0JuDDKHZoU4ZutqwWwhsu4BNXym-hSH66Lx2i-kGXlpBJwfc64Y-0E2ZNHzTPjrKopOneeXhAsgrdUUt0_ZfX1Qga01zMln6SnYNyKaDRQPqMvDXEqOtPQlheaTEGcMaRANo1u9FG5aArlJ8uLmCp4fzjcGTvEx8yDAVF9ZJmO9WQ7YIZEHYYBjCV8f-7_GL1pRkuImbfTiUUiXAQ-KIHm3lGD"
+                    loading="lazy"
+                  />
+                  <img
+                    alt="Smart lock detail"
+                    className="w-full aspect-square rounded-2xl object-cover object-center shadow-lg"
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuDLnsJ25r8niw5gZpo01T4kCCGQpw_QjLc3DNqZ3jVoqpVto6aJwSJ1njVmyFRY4lKpCxlORy7gBBk4Q_OhqkGAMkCIu56QwPVDAfE5p2JRDcc84s3bvoL1n5ECJB-OYPdPRy5j7bEGi1OoduxVPAGLfDcuzSMnT-mfNmU2rZgqkA4tc_MFhZshcFzynEcNWgH-7ZE2RC-Wepm90oSyPALI-UKOsZuNyE6mMNdE51qPIhT7LQLPYQWQCQN3JZGDyjTZLuDulE1LAxuG"
+                    loading="lazy"
+                  />
                 </div>
                 <div className="space-y-4 pt-12">
-                  <div className="w-full aspect-square rounded-2xl bg-cover bg-center shadow-lg" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuAe09Tw9NWs7XB-N10l7nOfjNQRngl_QWas5gSks-WnI-NjE4E64CER8iSRamfzLO5DlttlikbNWJMBBMQEey1nsDP2aFJPAXYJiBVFMR4NCRVL8AGWGeZU3Ma3Ol9JfzsihXi_-3u-XifkYCS5lBhkJhFqrpUPJjnkmgNn1xupCLA0nBdufU6nZqRytvoh6KIX-XMM8xErFJHEeQ3pXIs4ubRIsHtColI0xHRmgEzeM3qzkXUQ3qZiar9B8JCgeb8dB57ctHVOiZeA')" }}></div>
-                  <div className="w-full aspect-[3/4] rounded-2xl bg-cover bg-center shadow-lg" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuDAzR2VvHq0ALOSYjWneSGW5VFLhRP3Y6_Qh497dhPEdY93SCs3rLog2E_J1aDkE7Jco-PlaIjTtJs9B5SGYVNcHaDiuCVT_MtN9IZ61bnqCZBEuT79S-G9tnk9pqQ8aziw1egoeYuvcdxY2APuFJuDMs1CSB0Zkr35HZARVQz797zOhDHKPZkrcOE1Xq0aRFENspeVe3pNLB_24CbKK0JeZtripyE5eJQf0wxY97F0Z-JRkzD3vm4XbuIvWNrdpNGhtKXPSAqHPYyr')" }}></div>
+                  <img
+                    alt="Property monitoring dashboard"
+                    className="w-full aspect-square rounded-2xl object-cover object-center shadow-lg"
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuAe09Tw9NWs7XB-N10l7nOfjNQRngl_QWas5gSks-WnI-NjE4E64CER8iSRamfzLO5DlttlikbNWJMBBMQEey1nsDP2aFJPAXYJiBVFMR4NCRVL8AGWGeZU3Ma3Ol9JfzsihXi_-3u-XifkYCS5lBhkJhFqrpUPJjnkmgNn1xupCLA0nBdufU6nZqRytvoh6KIX-XMM8xErFJHEeQ3pXIs4ubRIsHtColI0xHRmgEzeM3qzkXUQ3qZiar9B8JCgeb8dB57ctHVOiZeA"
+                    loading="lazy"
+                  />
+                  <img
+                    alt="Secure property entrance"
+                    className="w-full aspect-[3/4] rounded-2xl object-cover object-center shadow-lg"
+                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuDAzR2VvHq0ALOSYjWneSGW5VFLhRP3Y6_Qh497dhPEdY93SCs3rLog2E_J1aDkE7Jco-PlaIjTtJs9B5SGYVNcHaDiuCVT_MtN9IZ61bnqCZBEuT79S-G9tnk9pqQ8aziw1egoeYuvcdxY2APuFJuDMs1CSB0Zkr35HZARVQz797zOhDHKPZkrcOE1Xq0aRFENspeVe3pNLB_24CbKK0JeZtripyE5eJQf0wxY97F0Z-JRkzD3vm4XbuIvWNrdpNGhtKXPSAqHPYyr"
+                    loading="lazy"
+                  />
                 </div>
               </div>
             </div>

@@ -14,11 +14,11 @@ export default function JobsPage() {
   const router = useRouter();
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [jobs, setJobs] = useState<Job[]>([]);
-  const [loading, setLoading] = useState(true);
+  // Initialize loading based on whether auth service is available
+  const [loading, setLoading] = useState(auth !== null);
 
   useEffect(() => {
     if (!auth) {
-      setLoading(false);
       return;
     }
 
