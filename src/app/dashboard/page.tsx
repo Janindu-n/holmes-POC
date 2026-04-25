@@ -48,6 +48,10 @@ export default function Dashboard() {
   const [job] = useState<Job>(MOCK_JOB);
 
   const handleLogout = async () => {
+    if (!auth) {
+      router.push('/');
+      return;
+    }
     try {
       await signOut(auth);
       router.push('/');
