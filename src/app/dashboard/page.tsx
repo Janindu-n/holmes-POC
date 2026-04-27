@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { auth } from '@/lib/firebase';
-import { signOut } from 'firebase/auth';
+import { signOut, onAuthStateChanged } from 'firebase/auth';
 import dynamic from 'next/dynamic';
 import { Job, JobStatus, JOB_STATUS_LABELS, JOB_STATUS_ORDER } from '@/types/job';
 
@@ -46,6 +46,26 @@ const STATUS_ICONS: Record<JobStatus, string> = {
 export default function Dashboard() {
   const router = useRouter();
   const [job] = useState<Job>(MOCK_JOB);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!auth) {
+      setError('Service uninitialized. Please try again later.');
+      setLoading(false);
+      return;
+    }
+
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        router.replace('/auth/login');
+      } else {
+        setLoading(false);
+      }
+    });
+
+    return () => unsubscribe();
+  }, [router]);
 
   const handleLogout = async () => {
     try {
@@ -59,6 +79,37 @@ export default function Dashboard() {
   const currentStatusIndex = JOB_STATUS_ORDER.indexOf(job.status);
 
   const canShowStream = currentStatusIndex >= JOB_STATUS_ORDER.indexOf('started');
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-dashboard-bg dark:bg-background-dark flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <span className="material-symbols-outlined text-stone-400 text-6xl animate-spin">
+            progress_activity
+          </span>
+          <p className="text-stone-500 font-medium">Verifying session...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-dashboard-bg dark:bg-background-dark flex items-center justify-center p-4">
+        <div className="bg-white dark:bg-surface-dark p-8 rounded-2xl shadow-xl border border-red-100 dark:border-red-900/20 max-w-md w-full text-center">
+          <span className="material-symbols-outlined text-red-500 text-5xl mb-4">error</span>
+          <h2 className="text-xl font-bold text-stone-900 dark:text-white mb-2">Configuration Error</h2>
+          <p className="text-stone-600 dark:text-stone-400 mb-6">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="w-full bg-primary hover:bg-primary-hover text-white font-bold py-2.5 rounded-lg transition-all"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-dashboard-bg dark:bg-background-dark font-display text-stone-600 dark:text-stone-300 min-h-screen flex flex-col overflow-x-hidden transition-colors duration-200">
