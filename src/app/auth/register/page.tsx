@@ -23,6 +23,13 @@ function RegisterForm() {
     setLoading(true);
     setError('');
 
+    // Security check: minimum password length
+    if (password.length < 8) {
+      setError('Password must be at least 8 characters long');
+      setLoading(false);
+      return;
+    }
+
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       await updateProfile(userCredential.user, { displayName: name });
