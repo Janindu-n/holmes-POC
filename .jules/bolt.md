@@ -1,0 +1,3 @@
+## 2025-05-14 - Optimized scroll-linked animations in Home page
+**Learning:** Attaching React state to high-frequency events like `scroll` causes the entire component tree to re-render on every event, leading to significant performance degradation. Direct DOM manipulation within `requestAnimationFrame` combined with `useRef` and `will-change` provides a much smoother experience by bypassing the React render cycle.
+**Action:** Always prefer direct DOM updates for high-frequency visual changes (scroll, mouse move) instead of React state if the change doesn't need to be reflected in the component's logical state.
