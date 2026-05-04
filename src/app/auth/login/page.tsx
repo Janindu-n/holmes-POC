@@ -24,9 +24,10 @@ export default function Login() {
       }
       await signInWithEmailAndPassword(auth, email, password);
       router.push('/dashboard');
-    } catch (err: any) {
-      setError(err.message === 'Firebase is not properly configured. Please check your environment variables.'
-        ? err.message
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : String(err);
+      setError(errorMessage === 'Firebase is not properly configured. Please check your environment variables.'
+        ? errorMessage
         : 'Invalid email or password');
     } finally {
       setLoading(false);
