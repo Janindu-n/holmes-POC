@@ -1,0 +1,3 @@
+## 2025-05-15 - Scroll-Linked Animation Optimization
+**Learning:** Using React state (useState) to track scroll position for animations causes the entire component to re-render on every scroll tick. In complex pages like the Home page, this leads to significant performance degradation and potential jank as the Virtual DOM is recalculated unnecessarily.
+**Action:** Use `useRef` to target elements and update their styles directly within a `requestAnimationFrame` loop in a `useEffect` hook. This bypasses the React render cycle for high-frequency updates, ensuring 60fps animations and zero re-renders.
