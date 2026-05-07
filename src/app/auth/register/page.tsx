@@ -10,7 +10,11 @@ import { auth, db } from '@/lib/firebase';
 function RegisterForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const role = searchParams.get('role') || 'client';
+
+  // Security: Implement role whitelisting to prevent unauthorized privilege escalation.
+  // Only 'client' and 'specialist' are allowed roles via URL parameters.
+  const rawRole = searchParams.get('role') || 'client';
+  const role = ['client', 'specialist'].includes(rawRole) ? rawRole : 'client';
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -38,7 +42,10 @@ function RegisterForm() {
 
       router.push('/dashboard');
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Failed to create an account');
+      // Security: Use a generic error message to avoid leaking Firebase-specific implementation details
+      // or information about existing accounts (email enumeration).
+      console.error('Registration error:', err);
+      setError('An error occurred during registration. Please try again.');
     } finally {
       setLoading(false);
     }
