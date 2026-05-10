@@ -1,21 +1,55 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import Link from 'next/link';
 
 export default function Home() {
-  const [scrollY, setScrollY] = useState(0);
+  const heroRef = useRef<HTMLDivElement>(null);
+  const requestRef = useRef<number>(0);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrollY(window.scrollY);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+    // Optimization: Use direct DOM manipulation for scroll animations to avoid React re-renders.
+    // This achieves 0 re-renders during high-frequency scroll events.
+    const updateStyles = () => {
+      if (!heroRef.current) return;
 
-  const opacity = Math.max(1 - scrollY / 400, 0);
-  const translateY = scrollY / 3;
+      const scrollY = window.scrollY;
+      const opacity = Math.max(1 - scrollY / 400, 0);
+      const translateY = scrollY / 3;
+
+      // Batch style updates directly
+      heroRef.current.style.opacity = opacity.toString();
+      heroRef.current.style.transform = `translateY(${translateY}px)`;
+
+      // Clear the request ref once the update is done to avoid infinite loops
+      requestRef.current = 0;
+    };
+
+    // Initial sync on mount
+    const initialSync = () => {
+      const scrollY = window.scrollY;
+      if (heroRef.current) {
+        heroRef.current.style.opacity = Math.max(1 - scrollY / 400, 0).toString();
+        heroRef.current.style.transform = `translateY(${scrollY / 3}px)`;
+      }
+    };
+    initialSync();
+
+    const handleScroll = () => {
+      // Use requestAnimationFrame for smooth 60fps+ animations.
+      // We only schedule one frame at a time to avoid redundant work.
+      if (!requestRef.current) {
+        requestRef.current = requestAnimationFrame(updateStyles);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      if (requestRef.current) cancelAnimationFrame(requestRef.current);
+    };
+  }, []);
 
   return (
     <div className="bg-background-light dark:bg-background-dark text-stone-900 dark:text-white font-display min-h-screen">
@@ -49,11 +83,9 @@ export default function Home() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-8 items-center">
             <div
+              ref={heroRef}
               className="flex flex-col gap-6 text-left max-w-2xl transition-all duration-75"
-              style={{
-                opacity: opacity,
-                transform: `translateY(${translateY}px)`
-              }}
+              style={{ willChange: 'transform, opacity' }}
             >
               <div className="inline-flex w-fit items-center gap-2 rounded-full border border-orange-200 bg-orange-50 px-3 py-1 text-xs font-semibold text-orange-800 dark:border-orange-900 dark:bg-orange-900/30 dark:text-orange-300">
                 <span className="relative flex h-2 w-2">

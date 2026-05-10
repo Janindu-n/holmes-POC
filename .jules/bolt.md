@@ -1,0 +1,3 @@
+## 2026-05-10 - Scroll-Linked Animation Optimization
+**Learning:** Using `useState` for scroll-linked animations in React causes the entire component to re-render on every scroll event, leading to high CPU usage and potential frame drops. Direct DOM manipulation within a `requestAnimationFrame` loop bypasses React's reconciliation, resulting in 0 re-renders. However, care must be taken to avoid infinite rAF loops by only scheduling updates when events occur.
+**Action:** Use `useRef` and `requestAnimationFrame` for high-frequency UI updates. Ensure the rAF loop is not recursive and only schedules a single frame per event to save resources. Always cleanup temporary logs and verification scripts before submission.
