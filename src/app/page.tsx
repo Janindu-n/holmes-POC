@@ -1,21 +1,42 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import Link from 'next/link';
 
 export default function Home() {
-  const [scrollY, setScrollY] = useState(0);
+  const heroRef = useRef<HTMLDivElement>(null);
+  const scrollRef = useRef(0);
+  const rafId = useRef<number | null>(null);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrollY(window.scrollY);
+    const updateStyles = () => {
+      if (heroRef.current) {
+        const opacity = Math.max(1 - scrollRef.current / 400, 0);
+        const translateY = scrollRef.current / 3;
+        heroRef.current.style.opacity = opacity.toString();
+        heroRef.current.style.transform = `translateY(${translateY}px)`;
+      }
+      rafId.current = null;
     };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
-  const opacity = Math.max(1 - scrollY / 400, 0);
-  const translateY = scrollY / 3;
+    const handleScroll = () => {
+      scrollRef.current = window.scrollY;
+      if (rafId.current === null) {
+        rafId.current = requestAnimationFrame(updateStyles);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    // Initial sync
+    updateStyles();
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      if (rafId.current !== null) {
+        cancelAnimationFrame(rafId.current);
+      }
+    };
+  }, []);
 
   return (
     <div className="bg-background-light dark:bg-background-dark text-stone-900 dark:text-white font-display min-h-screen">
@@ -49,11 +70,8 @@ export default function Home() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-8 items-center">
             <div
-              className="flex flex-col gap-6 text-left max-w-2xl transition-all duration-75"
-              style={{
-                opacity: opacity,
-                transform: `translateY(${translateY}px)`
-              }}
+              ref={heroRef}
+              className="flex flex-col gap-6 text-left max-w-2xl transition-all duration-75 will-change-[transform,opacity]"
             >
               <div className="inline-flex w-fit items-center gap-2 rounded-full border border-orange-200 bg-orange-50 px-3 py-1 text-xs font-semibold text-orange-800 dark:border-orange-900 dark:bg-orange-900/30 dark:text-orange-300">
                 <span className="relative flex h-2 w-2">
