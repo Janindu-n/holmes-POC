@@ -10,7 +10,10 @@ import { auth, db } from '@/lib/firebase';
 function RegisterForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const role = searchParams.get('role') || 'client';
+
+  // Whitelist allowed roles to prevent privilege escalation
+  const rawRole = searchParams.get('role');
+  const role = (rawRole === 'client' || rawRole === 'specialist') ? rawRole : 'client';
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -22,6 +25,13 @@ function RegisterForm() {
     e.preventDefault();
     setLoading(true);
     setError('');
+
+    // Basic password length validation
+    if (password.length < 8) {
+      setError('Password must be at least 8 characters long');
+      setLoading(false);
+      return;
+    }
 
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
@@ -38,7 +48,17 @@ function RegisterForm() {
 
       router.push('/dashboard');
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Failed to create an account');
+      // Use generic error messages to prevent email enumeration and leaking internals
+      const errorMessage = err instanceof Error ? err.message : '';
+
+      if (errorMessage.includes('auth/weak-password')) {
+        setError('The password is too weak');
+      } else if (errorMessage.includes('auth/invalid-email')) {
+        setError('Invalid email address format');
+      } else {
+        // Mask other errors (like email-already-in-use) with a generic message
+        setError('Failed to create an account. Please check your details and try again.');
+      }
     } finally {
       setLoading(false);
     }
