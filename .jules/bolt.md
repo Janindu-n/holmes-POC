@@ -1,0 +1,3 @@
+## 2026-05-11 - Scroll-Linked Animation Optimization
+**Learning:** High-frequency scroll animations implemented via React state trigger excessive re-renders (one per scroll event). Moving this logic to direct DOM manipulation within a `requestAnimationFrame` loop significantly improves performance by bypassing the React reconciliation cycle. Additionally, leaving CSS `transition` properties on elements being manually animated via JS causes "fighting" between the two systems, leading to jittery visuals.
+**Action:** Use `useRef` for DOM access and scroll tracking. Implement a throttled `requestAnimationFrame` loop for updates. Ensure any conflicting CSS transitions are removed from the animated properties.
