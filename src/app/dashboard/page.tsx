@@ -46,6 +46,25 @@ const STATUS_ICONS: Record<JobStatus, string> = {
 export default function Dashboard() {
   const router = useRouter();
   const [job] = useState<Job>(MOCK_JOB);
+  const [loading, setLoading] = useState(true);
+
+  React.useEffect(() => {
+    // If auth is null (e.g. during build or missing config), we should fail closed
+    if (!auth) {
+      router.push('/auth/login');
+      return;
+    }
+
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (!user) {
+        router.push('/auth/login');
+      } else {
+        setLoading(false);
+      }
+    });
+
+    return () => unsubscribe();
+  }, [router]);
 
   const handleLogout = async () => {
     try {
@@ -59,6 +78,17 @@ export default function Dashboard() {
   const currentStatusIndex = JOB_STATUS_ORDER.indexOf(job.status);
 
   const canShowStream = currentStatusIndex >= JOB_STATUS_ORDER.indexOf('started');
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-dashboard-bg dark:bg-background-dark flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="size-12 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-stone-500 font-medium">Verifying session...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-dashboard-bg dark:bg-background-dark font-display text-stone-600 dark:text-stone-300 min-h-screen flex flex-col overflow-x-hidden transition-colors duration-200">
