@@ -10,7 +10,9 @@ import { auth, db } from '@/lib/firebase';
 function RegisterForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const role = searchParams.get('role') || 'client';
+  const roleParam = searchParams.get('role');
+  // Whitelist allowed roles to prevent privilege escalation
+  const role = roleParam === 'specialist' ? 'specialist' : 'client';
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
