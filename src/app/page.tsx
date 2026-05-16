@@ -1,21 +1,41 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import Link from 'next/link';
 
 export default function Home() {
-  const [scrollY, setScrollY] = useState(0);
+  const heroContentRef = useRef<HTMLDivElement>(null);
+  const requestRef = useRef<number>(0);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrollY(window.scrollY);
+    const updateScrollStyles = () => {
+      const scrollY = window.scrollY;
+      if (heroContentRef.current) {
+        const opacity = Math.max(1 - scrollY / 400, 0);
+        const translateY = scrollY / 3;
+        heroContentRef.current.style.opacity = opacity.toString();
+        heroContentRef.current.style.transform = `translateY(${translateY}px)`;
+      }
+      requestRef.current = 0;
     };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
-  const opacity = Math.max(1 - scrollY / 400, 0);
-  const translateY = scrollY / 3;
+    const handleScroll = () => {
+      if (!requestRef.current) {
+        requestRef.current = requestAnimationFrame(updateScrollStyles);
+      }
+    };
+
+    // Initial sync
+    updateScrollStyles();
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      if (requestRef.current) {
+        cancelAnimationFrame(requestRef.current);
+      }
+    };
+  }, []);
 
   return (
     <div className="bg-background-light dark:bg-background-dark text-stone-900 dark:text-white font-display min-h-screen">
@@ -49,10 +69,10 @@ export default function Home() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-8 items-center">
             <div
-              className="flex flex-col gap-6 text-left max-w-2xl transition-all duration-75"
+              ref={heroContentRef}
+              className="flex flex-col gap-6 text-left max-w-2xl will-change-[opacity,transform]"
               style={{
-                opacity: opacity,
-                transform: `translateY(${translateY}px)`
+                // Initial styles handled by useEffect
               }}
             >
               <div className="inline-flex w-fit items-center gap-2 rounded-full border border-orange-200 bg-orange-50 px-3 py-1 text-xs font-semibold text-orange-800 dark:border-orange-900 dark:bg-orange-900/30 dark:text-orange-300">
