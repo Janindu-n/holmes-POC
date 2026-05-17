@@ -1,0 +1,4 @@
+## 2026-05-11 - Dashboard Authentication and Registration Hardening
+**Vulnerability:** The Dashboard was accessible without any authentication checks, and the registration flow lacked role whitelisting, password length enforcement, and leaked detailed Firebase error messages.
+**Learning:** Next.js pages marked with `'use client'` require explicit authentication guards (e.g., using `onAuthStateChanged`) to prevent unauthenticated access, as they are otherwise rendered for any visitor.
+**Prevention:** Always implement authentication guards on sensitive client-side routes and validate all user-controlled inputs (like URL parameters for roles) on the server or at the entry point of the client-side flow. Use generic error messages for authentication and registration to prevent information leakage.
