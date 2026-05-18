@@ -10,7 +10,10 @@ import { auth, db } from '@/lib/firebase';
 function RegisterForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const role = searchParams.get('role') || 'client';
+
+  // Validate role from URL parameter to prevent role escalation
+  const rawRole = searchParams.get('role');
+  const role = (rawRole === 'client' || rawRole === 'specialist') ? rawRole : 'client';
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -38,7 +41,17 @@ function RegisterForm() {
 
       router.push('/dashboard');
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Failed to create an account');
+      // Mask specific Firebase error messages to prevent account enumeration
+      const errorMessage = err instanceof Error ? err.message : '';
+      if (errorMessage.includes('auth/email-already-in-use')) {
+        setError('An account with this email already exists.');
+      } else if (errorMessage.includes('auth/invalid-email')) {
+        setError('Invalid email address.');
+      } else if (errorMessage.includes('auth/weak-password')) {
+        setError('Password should be at least 6 characters.');
+      } else {
+        setError('Failed to create an account. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
