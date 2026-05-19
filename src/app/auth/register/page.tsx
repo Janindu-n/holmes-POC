@@ -10,7 +10,9 @@ import { auth, db } from '@/lib/firebase';
 function RegisterForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const role = searchParams.get('role') || 'client';
+  const rawRole = searchParams.get('role');
+  const allowedRoles = ['client', 'specialist'];
+  const role = allowedRoles.includes(rawRole || '') ? rawRole : 'client';
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -38,7 +40,15 @@ function RegisterForm() {
 
       router.push('/dashboard');
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Failed to create an account');
+      // Avoid leaking detailed Firebase error messages to prevent account enumeration
+      const firebaseError = err as { code?: string };
+      if (firebaseError.code === 'auth/email-already-in-use') {
+        setError('An account with this email already exists.');
+      } else if (firebaseError.code === 'auth/weak-password') {
+        setError('Password should be at least 8 characters.');
+      } else {
+        setError('Failed to create account. Please check your details and try again.');
+      }
     } finally {
       setLoading(false);
     }
@@ -94,11 +104,13 @@ function RegisterForm() {
               <input
                 type="password"
                 required
+                minLength={8}
                 className="w-full px-4 py-2 rounded-lg border border-stone-300 dark:border-stone-600 dark:bg-stone-800 focus:ring-2 focus:ring-primary focus:border-primary transition-all outline-none"
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
+              <p className="mt-1 text-xs text-stone-500">Minimum 8 characters</p>
             </div>
 
             {error && (
