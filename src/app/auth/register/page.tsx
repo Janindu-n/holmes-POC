@@ -7,10 +7,15 @@ import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import { auth, db } from '@/lib/firebase';
 
+// Whitelist allowed roles to prevent arbitrary role injection
+const ALLOWED_ROLES = ['client', 'specialist'];
+
 function RegisterForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const role = searchParams.get('role') || 'client';
+
+  const roleParam = searchParams.get('role');
+  const role = ALLOWED_ROLES.includes(roleParam || '') ? roleParam : 'client';
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -22,6 +27,13 @@ function RegisterForm() {
     e.preventDefault();
     setLoading(true);
     setError('');
+
+    // Basic password validation
+    if (password.length < 8) {
+      setError('Password must be at least 8 characters long');
+      setLoading(false);
+      return;
+    }
 
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
@@ -38,7 +50,14 @@ function RegisterForm() {
 
       router.push('/dashboard');
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Failed to create an account');
+      // Use generic error messages to prevent account enumeration and hide internal details
+      const firebaseError = err as { code?: string; message?: string };
+      if (firebaseError.code === 'auth/email-already-in-use' || firebaseError.code === 'auth/invalid-email') {
+        setError('Invalid registration details. Please check your email and password.');
+      } else {
+        setError('Failed to create an account. Please try again later.');
+      }
+      console.error('Registration error:', firebaseError.code || firebaseError.message);
     } finally {
       setLoading(false);
     }
