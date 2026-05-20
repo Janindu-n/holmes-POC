@@ -1,0 +1,3 @@
+## 2026-05-11 - Optimized Scroll-Linked Animations on Home Page
+**Learning:** Updating React state on every scroll event in a large component like `Home` triggers expensive re-renders (measured ~20 per scroll sequence). This causes unnecessary CPU load and can lead to janky animations. Using `useRef` for direct DOM manipulation combined with `requestAnimationFrame` for throttling eliminates these re-renders (reduced to zero) and ensures animations stay synchronized with the browser's refresh rate.
+**Action:** Use `useRef` and `requestAnimationFrame` instead of React state for scroll-linked animations in complex components to avoid main-thread blocking and unnecessary re-renders.
